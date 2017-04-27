@@ -1,7 +1,7 @@
 {
-  "name": "motes",
+  "name": "motes-web",
   "version": "1.0.0-alpha",
-  "description": "Dust motes",
+  "description": "Dust motes - web server",
   "main": "index.js",
   "scripts": {
     "test": "mocha",

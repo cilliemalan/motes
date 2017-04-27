@@ -42,3 +42,6 @@ gcp-credentials.json
 
 # some terraform files
 *.tfstate*
+
+# vs code stuffs
+.vscode

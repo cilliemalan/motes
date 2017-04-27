@@ -155,6 +155,6 @@ the server.
 > gcloud compute ssh gocd
 
 ~$ ADMIN_PASSWORD=<password here>
-~$ echo "admin:$(python -c "import sha;from base64 import b64encode;print b64encode(sha.new('$ADMIN_PASSWORD').digest())")" > /etc/go/passwd
+~$ echo "admin:$(python -c "import sha;from base64 import b64encode;print b64encode(sha.new('$ADMIN_PASSWORD').digest())")" | sudo tee /etc/go/passwd
 ~$ exit
 ```

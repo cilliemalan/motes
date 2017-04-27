@@ -5,7 +5,7 @@
 
 # some deps
 apt update
-apt install software-properties-common git apt-transport-https dnsutils -y
+apt install software-properties-common git apt-transport-https dnsutils unzip -y
 apt install build-essential curl m4 ruby texinfo libbz2-dev libcurl4-openssl-dev libexpat-dev libncurses-dev zlib1g-dev -y
 
 
@@ -13,6 +13,14 @@ apt install build-essential curl m4 ruby texinfo libbz2-dev libcurl4-openssl-dev
 curl -o- https://deb.nodesource.com/setup_7.x | bash
 apt update
 apt install nodejs -y
+# some useful things
+npm install -g -y bower grunt gulp
+
+
+# terraform
+wget https://releases.hashicorp.com/terraform/0.9.4/terraform_0.9.4_linux_amd64.zip -O /tmp/terraform.zip
+unzip /tmp/terraform.zip -d /usr/bin
+rm /tmp/terraform.zip
 
 
 # java

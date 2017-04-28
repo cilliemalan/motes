@@ -16,7 +16,7 @@ RUN \
     echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
     echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections && \
     apt-get update && \
-    apt-get install oracle-java8-installer oracle-java8-set-default -y && \
+    apt-get install oracle-java8-installer oracle-java8-set-default netcat-openbsd -y && \
     java -version && \
     javac -version && \
     wget -q "http://www.apache.org/dist/zookeeper/$ZK_DIST/$ZK_DIST.tar.gz" && \
@@ -40,11 +40,11 @@ RUN \
 	ln -s /opt/zookeeper/lib/* /usr/share/zookeeper
 
 # configuration for ZK
-COPY zoo.conf java.env /opt/zookeeper/conf/
+COPY zoo.cfg java.env /opt/zookeeper/conf/
 
 # some helper scripts
-COPY zkOk.sh zkStats.sh /opt/zookeeper/bin/
+COPY zkOk.sh zkStats.sh zkStart.sh /opt/zookeeper/bin/
 
 # entrypoint
 WORKDIR /opt/zookeeper
-CMD ["sudo", "-u", "zookeeper", "bin/zkServer.sh start-foreground"]
+CMD ["bin/zkStart.sh"]

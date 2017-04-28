@@ -10,17 +10,13 @@ EXPOSE 2888 3888 2181
 
 # some deps
 RUN \
-    echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" >> /etc/apt/sources.list.d/webupd8team-java.list && \
-    echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" >> /etc/apt/sources.list.d/webupd8team-java.list && \
-    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886 && \
-    echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
-    echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections && \
     apt-get update && \
-    apt-get install oracle-java8-installer oracle-java8-set-default netcat-openbsd -y && \
+    apt-get install openjdk-8-jre-headless wget netcat-openbsd -y && \
     java -version && \
     javac -version && \
-    wget -q "http://www.apache.org/dist/zookeeper/$ZK_DIST/$ZK_DIST.tar.gz" && \
-    tar -xzf "$ZK_DIST.tar.gz" -C /opt && \
+    wget -q "http://www.apache.org/dist/zookeeper/$ZK_DIST/$ZK_DIST.tar.gz" -O "/tmp/$ZK_DIST.tar.gz"  && \
+    tar -xzf "/tmp/$ZK_DIST.tar.gz" -C /opt && \
+    rm "/tmp/$ZK_DIST.tar.gz" && \
     ln -s /opt/$ZK_DIST /opt/zookeeper && \
     useradd zookeeper && \
     mkdir -p /var/lib/zookeeper/data && \
@@ -30,17 +26,23 @@ RUN \
     mkdir -p /tmp/zookeeper && \
     mkdir -p /usr/etc && \
     chown -R "zookeeper:zookeeper" \
-        /opt/$ZK_DIST \
+        "/opt/$ZK_DIST" \
         /var/lib/zookeeper \
         /usr/share/zookeeper \
         /tmp/zookeeper && \
     ln -s /opt/zookeeper/conf/ /usr/etc/zookeeper && \
 	ln -s /opt/zookeeper/bin/* /usr/bin && \
 	ln -s /opt/zookeeper/$ZK_DIST.jar /usr/share/zookeeper/ && \
-	ln -s /opt/zookeeper/lib/* /usr/share/zookeeper
+	ln -s /opt/zookeeper/lib/* /usr/share/zookeeper && \
+    cd /opt/zookeeper && \
+    rm -rf CHANGES.txt README.txt NOTICE.txt CHANGES.txt README_packaging.txt build.xml \
+            config contrib dist-maven docs ivy.xml ivysettings.xml recipes src \
+            $ZK_DIST.jar.asc $ZK_DIST.jar.md5 $ZK_DIST.jar.sha1 && \
+    apt-get autoremove -y wget && \
+    rm -rf /var/lib/apt/lists/*
 
 # configuration for ZK
-COPY zoo.cfg java.env /opt/zookeeper/conf/
+COPY zoo.cfg.base java.env /opt/zookeeper/conf/
 
 # some helper scripts
 COPY zkOk.sh zkStats.sh zkStart.sh /opt/zookeeper/bin/

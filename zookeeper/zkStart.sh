@@ -6,7 +6,7 @@
 cd -P /opt/zookeeper
 
 # make config
-cat /conf/zoo.cfg.base > zoo.cfg
+cat conf/zoo.cfg.base > conf/zoo.cfg
 
 
 su zookeeper -c 'zkServer.sh start-foreground'

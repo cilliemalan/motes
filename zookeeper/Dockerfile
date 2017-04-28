@@ -13,7 +13,6 @@ RUN \
     apt-get update && \
     apt-get install openjdk-8-jre-headless wget netcat-openbsd -y && \
     java -version && \
-    javac -version && \
     wget -q "http://www.apache.org/dist/zookeeper/$ZK_DIST/$ZK_DIST.tar.gz" -O "/tmp/$ZK_DIST.tar.gz"  && \
     tar -xzf "/tmp/$ZK_DIST.tar.gz" -C /opt && \
     rm "/tmp/$ZK_DIST.tar.gz" && \

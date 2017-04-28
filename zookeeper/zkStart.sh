@@ -3,7 +3,7 @@
 # Helper script to start the service as the right user and config
 
 # change to zookeeper dir
-cd /opt/zookeeper
+cd -P /opt/zookeeper
 
 # make config
 cat /conf/zoo.cfg.base > zoo.cfg

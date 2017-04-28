@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build . -t cilliemalan/motes-zookeeper
+docker build -t cilliemalan/motes-zookeeper .

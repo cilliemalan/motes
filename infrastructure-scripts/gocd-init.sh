@@ -4,9 +4,15 @@
 # wiped and recreated from SCRATCH
 
 # some deps
-apt update
-apt install software-properties-common git apt-transport-https dnsutils unzip -y
-apt install build-essential curl m4 ruby texinfo libbz2-dev libcurl4-openssl-dev libexpat-dev libncurses-dev zlib1g-dev -y
+if [[ -z "$(which gcc)" ]];
+then
+    echo "Updating deps"
+    apt update
+    apt install software-properties-common git apt-transport-https dnsutils unzip -y
+    apt install build-essential curl m4 ruby texinfo libbz2-dev libcurl4-openssl-dev libexpat-dev libncurses-dev zlib1g-dev -y
+else
+    echo "Not updating deps"
+fi
 
 # update DNS
 cat > /root/update-dns.sh <<'eofscript'
@@ -72,48 +78,61 @@ eofscript
 chmod +x /root/update-dns.sh
 /root/update-dns.sh
 
-cat > /etc/rc.local <<EOF
-#!/bin/sh -e
-/root/update-dns.sh
-exit 0
-EOF
-
 # nodeJS
-curl -o- https://deb.nodesource.com/setup_7.x | bash
-apt update
-apt install nodejs -y
-# some useful things
-npm install -g -y bower grunt gulp
-
+if [[ -z "$(which node)" ]];
+then
+    echo "Installing Node"
+    curl -o- https://deb.nodesource.com/setup_7.x | bash
+    apt update
+    apt install nodejs -y
+    # some useful things
+    npm install -g -y bower grunt gulp
+else
+    echo "Node already installed"
+fi
 
 # terraform
-wget https://releases.hashicorp.com/terraform/0.9.4/terraform_0.9.4_linux_amd64.zip -O /tmp/terraform.zip
-unzip /tmp/terraform.zip -d /usr/bin
-rm /tmp/terraform.zip
+if [[ -z "$(which node)" ]];
+then
+    echo "Installing Terraform"
+    wget https://releases.hashicorp.com/terraform/0.9.4/terraform_0.9.4_linux_amd64.zip -O /tmp/terraform.zip
+    unzip /tmp/terraform.zip -d /usr/bin
+    rm /tmp/terraform.zip
+else
+    echo "Terraform already installed"
+fi
 
 
 # java
-echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" >> /etc/apt/sources.list.d/webupd8team-java.list
-echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" >> /etc/apt/sources.list.d/webupd8team-java.list
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
-# accept agreement
-echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
-echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections
-apt update
-apt install oracle-java8-installer oracle-java8-set-default -y
-java -version
-javac -version
+if [[ -z "$(which java)" ]];
+then
+    echo "Installing Java"
+    echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" >> /etc/apt/sources.list.d/webupd8team-java.list
+    echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" >> /etc/apt/sources.list.d/webupd8team-java.list
+    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
+    # accept agreement
+    echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
+    echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections
+    apt update
+    apt install oracle-java8-installer oracle-java8-set-default -y
+    java -version
+else
+    echo "Java already installed"
+fi
 
 
 # nginx
-echo "deb http://nginx.org/packages/debian/ jessie nginx" >> /etc/apt/sources.list.d/nginx.list
-echo "deb-src http://nginx.org/packages/debian/ jessie nginx" >> /etc/apt/sources.list.d/nginx.list
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ABF5BD827BD9BF62
-apt update
-apt install nginx -y
-openssl dhparam 2048 -out /etc/nginx/dhparam.pem
-# temporary config until LE certs are in place
-cat > /etc/nginx/conf.d/default.conf <<EOF
+if [[ -f /etc/init.d/nginx ]];
+then
+    echo "Installing Nginx"
+    echo "deb http://nginx.org/packages/debian/ jessie nginx" >> /etc/apt/sources.list.d/nginx.list
+    echo "deb-src http://nginx.org/packages/debian/ jessie nginx" >> /etc/apt/sources.list.d/nginx.list
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ABF5BD827BD9BF62
+    apt update
+    apt install nginx -y
+    openssl dhparam 2048 -out /etc/nginx/dhparam.pem
+    # temporary config until LE certs are in place
+    cat > /etc/nginx/conf.d/default.conf <<EOF
 # default server redirects to https except for .well-known
 server {
         listen [::]:80;
@@ -128,31 +147,38 @@ server {
         }
 }
 EOF
-/etc/init.d/nginx restart
-
+    /etc/init.d/nginx restart
+else
+    echo "Nginx already installed"
+fi
 
 # gocd
-echo "deb https://download.gocd.io /" > /etc/apt/sources.list.d/gocd.list
-curl -s https://download.gocd.io/GOCD-GPG-KEY.asc | apt-key add -
-apt update 
-apt install go-server go-agent -y
-# start
-/etc/init.d/go-server start
-/etc/init.d/go-agent start
-# set admin password
-ADMIN_PASSWORD="cdpasswd"
-echo "admin:$(python -c "import sha;from base64 import b64encode;print b64encode(sha.new('$ADMIN_PASSWORD').digest())")" > /etc/go/passwd
-sed -i -E "s/<server( .*?)\/>/<server \1>\n    <security>\n      <passwordFile path='\/etc\/go\/passwd' \/>\n    <\/security>\n  <\/server>/" /etc/go/cruise-config.xml
-# restart
-/etc/init.d/go-server restart
-
+if [[ -f /etc/init.d/go-server ]];
+then
+    echo "Installing Go CD"
+    echo "deb https://download.gocd.io /" > /etc/apt/sources.list.d/gocd.list
+    curl -s https://download.gocd.io/GOCD-GPG-KEY.asc | apt-key add -
+    apt update 
+    apt install go-server go-agent -y
+    # start
+    /etc/init.d/go-server start
+    /etc/init.d/go-agent start
+    # set admin password
+    ADMIN_PASSWORD="cdpasswd"
+    echo "admin:$(python -c "import sha;from base64 import b64encode;print b64encode(sha.new('$ADMIN_PASSWORD').digest())")" > /etc/go/passwd
+    sed -i -E "s/<server( .*?)\/>/<server \1>\n    <security>\n      <passwordFile path='\/etc\/go\/passwd' \/>\n    <\/security>\n  <\/server>/" /etc/go/cruise-config.xml
+    # restart
+    /etc/init.d/go-server restart
+else
+    echo "Go CD already installed"
+fi
 
 # cert script
 cat > /root/letsencrypt.sh <<'eofscript'
 #!/bin/bash
 
 # uncomment for staging
-# LE_ENVIRONMENT=--staging
+LE_ENVIRONMENT=--staging
 
 # certbot (letsencrypt certificates)
 if [[ ! -f /usr/sbin/certbot-auto ]]; then
@@ -274,6 +300,3 @@ eofscript
 # run the script
 chmod +x /root/letsencrypt.sh
 /root/letsencrypt.sh
-
-# and run it on startup too!
-

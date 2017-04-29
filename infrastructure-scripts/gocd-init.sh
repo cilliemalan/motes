@@ -122,7 +122,7 @@ fi
 
 
 # nginx
-if [[ -f /etc/init.d/nginx ]];
+if [[ ! -f /etc/init.d/nginx ]];
 then
     echo "Installing Nginx"
     echo "deb http://nginx.org/packages/debian/ jessie nginx" >> /etc/apt/sources.list.d/nginx.list
@@ -153,7 +153,7 @@ else
 fi
 
 # gocd
-if [[ -f /etc/init.d/go-server ]];
+if [[ ! -f /etc/init.d/go-server ]];
 then
     echo "Installing Go CD"
     echo "deb https://download.gocd.io /" > /etc/apt/sources.list.d/gocd.list

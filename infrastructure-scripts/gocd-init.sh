@@ -152,7 +152,7 @@ cat > /root/letsencrypt.sh <<'eofscript'
 #!/bin/bash
 
 # uncomment for staging
-LE_ENVIRONMENT=--staging
+# LE_ENVIRONMENT=--staging
 
 # certbot (letsencrypt certificates)
 if [[ ! -f /usr/sbin/certbot-auto ]]; then

@@ -64,6 +64,12 @@ resource "google_compute_instance" "gocd" {
     network       = "default"
     access_config = {}
   }
+
+  service_account {
+    scopes = ["useraccounts-ro", "storage-ro", "logging-write",
+              "monitoring-write", "service-management", "service-control",
+              "https://www.googleapis.com/auth/ndev.clouddns.readwrite"]
+  }
 }
 
 

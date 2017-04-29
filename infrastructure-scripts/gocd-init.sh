@@ -8,6 +8,75 @@ apt update
 apt install software-properties-common git apt-transport-https dnsutils unzip -y
 apt install build-essential curl m4 ruby texinfo libbz2-dev libcurl4-openssl-dev libexpat-dev libncurses-dev zlib1g-dev -y
 
+# update DNS
+cat > /root/update-dns.sh <<'eofscript'
+#!/bin/bash
+
+MY_IP=`curl -s "https://api.ipify.org"`
+DNS_NAME=`curl -s "http://metadata.google.internal/computeMetadata/v1/instance/attributes/dns" -H "Metadata-Flavor: Google"`
+ZONENAME="project-zone"
+
+
+
+dns_start() {
+  gcloud dns record-sets transaction start    -z "${ZONENAME}"
+}
+
+dns_info() {
+  gcloud dns record-sets transaction describe -z "${ZONENAME}"
+}
+
+dns_abort() {
+  gcloud dns record-sets transaction abort    -z "${ZONENAME}"
+}
+
+dns_commit() {
+  gcloud dns record-sets transaction execute  -z "${ZONENAME}"
+}
+
+dns_add() {
+    local -r name=$1
+    local -r ttl=$2
+    local -r type=$3
+    local -r data=$4
+    echo "Adding DNS ${name} -> ${data}"
+    gcloud dns record-sets transaction add -z "${ZONENAME}" --name "${name}" --ttl "${ttl}" --type "${type}" "${data}"
+}
+
+dns_del() {
+    local -r name=$1
+    local -r ttl=$2
+    local -r type=$3
+    local -r data=$4
+    echo "Removing DNS ${name} -> ${data}"
+    gcloud dns record-sets transaction remove -z "${ZONENAME}" --name "${name}" --ttl "${ttl}" --type "${type}" "${data}"
+}
+
+lookup_dns_ip() {
+  host "$1" | sed -rn 's@^.* has address @@p'
+}
+
+
+OLD_IP=`lookup_dns_ip "$DNS_NAME"`
+if [[ $MY_IP != $OLD_IP ]]; then
+    echo "About to do DNS update for $DNS_NAME from $OLD_IP -> $MY_IP"
+    dns_start
+    dns_del "${DNS_NAME}." 300 A "$OLD_IP"
+    dns_add "${DNS_NAME}." 300 A "$MY_IP"
+    dns_commit
+else
+    echo "No DNS update needed for $DNS_NAME which already points to our IP: $OLD_IP"
+fi
+
+eofscript
+chmod +x /root/update-dns.sh
+/root/update-dns.sh
+
+cat > /etc/rc.local <<EOF
+#!/bin/sh -e
+/root/update-dns.sh
+exit 0
+EOF
 
 # nodeJS
 curl -o- https://deb.nodesource.com/setup_7.x | bash
@@ -43,11 +112,28 @@ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ABF5BD827BD9BF62
 apt update
 apt install nginx -y
 openssl dhparam 2048 -out /etc/nginx/dhparam.pem
+# temporary config until LE certs are in place
+cat > /etc/nginx/conf.d/default.conf <<EOF
+# default server redirects to https except for .well-known
+server {
+        listen [::]:80;
+        listen      80;
+
+        location / {
+                return 301 https://\$host\$request_uri;
+        }
+
+        location /.well-known {
+                root /usr/share/nginx/html;
+        }
+}
+EOF
+/etc/init.d/nginx restart
 
 
 # gocd
 echo "deb https://download.gocd.io /" > /etc/apt/sources.list.d/gocd.list
-curl https://download.gocd.io/GOCD-GPG-KEY.asc | apt-key add -
+curl -s https://download.gocd.io/GOCD-GPG-KEY.asc | apt-key add -
 apt update 
 apt install go-server go-agent -y
 # start
@@ -61,7 +147,50 @@ sed -i -E "s/<server( .*?)\/>/<server \1>\n    <security>\n      <passwordFile p
 /etc/init.d/go-server restart
 
 
-# initial nginx http config. Https config will come later
+# cert script
+cat > /root/letsencrypt.sh <<'eofscript'
+#!/bin/bash
+
+# uncomment for staging
+LE_ENVIRONMENT=--staging
+
+# certbot (letsencrypt certificates)
+if [[ ! -f /usr/sbin/certbot-auto ]]; then
+    echo "Downloading certbot"
+    wget https://dl.eff.org/certbot-auto -O /usr/sbin/certbot-auto
+    chmod a+x /usr/sbin/certbot-auto
+
+    # bootstrap certbot-auto
+    certbot-auto -q
+fi
+
+
+# some vars
+DNS_NAME=`curl -s "http://metadata.google.internal/computeMetadata/v1/instance/attributes/dns" -H "Metadata-Flavor: Google"`
+EMAIL=`curl -s "http://metadata.google.internal/computeMetadata/v1/instance/attributes/email" -H "Metadata-Flavor: Google"`
+ACCOUNT_DIR=/etc/letsencrypt/accounts/acme-v01.api.letsencrypt.org/directory
+CERT_DIR="/etc/letsencrypt/live/$DNS_NAME/"
+WEBROOT=/usr/share/nginx/html
+
+
+# for certbot webroot plugin
+if [[ ! -e "$WEBROOT/.well-known" ]]; then
+    echo "Creating directory $WEBROOT/.well-known"
+    mkdir "$WEBROOT/.well-known"
+fi
+
+# register with letsencrypt if needed
+if [[ ! -e "$CERT_DIR" ]]; then
+    echo "Registering with letsencrypt using email $EMAIL..."
+    certbot-auto register --agree-tos -m "$EMAIL" --non-interactive "$LE_ENVIRONMENT"
+fi
+
+# run certbot
+if [[ ! -e "$CERT_DIR" ]]; then
+    echo "Registering certificate for $DNS_NAME"
+    certbot-auto certonly --webroot -w "$WEBROOT" -d "$DNS_NAME" --non-interactive "$LE_ENVIRONMENT"
+
+# Proper nginx config
 cat > /etc/nginx/conf.d/default.conf <<EOF
 # default server redirects to https except for .well-known
 server {
@@ -77,7 +206,74 @@ server {
         }
 }
 
+
+
+# ssl server proxy passes to gocd and has A+ rating on https://www.ssllabs.com/ssltest/
+server {
+        listen [::]:443 default_server ssl http2;
+        listen      443 default_server ssl http2;
+
+        server_name $DNS_NAME;
+
+        ssl_certificate /etc/letsencrypt/live/$DNS_NAME/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/$DNS_NAME/privkey.pem;
+        ssl_trusted_certificate /etc/letsencrypt/live/$DNS_NAME/chain.pem;
+        ssl_dhparam /etc/nginx/dhparam.pem;
+        ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
+        ssl_prefer_server_ciphers on;
+        ssl_ciphers ECDH+AESGCM:ECDH+AES256:ECDH+AES128:DH+3DES:!ADH:!AECDH:!MD5;
+        ssl_session_cache shared:SSL:20m;
+        ssl_session_timeout 180m;
+        ssl_stapling on;
+        ssl_stapling_verify on;
+
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+        resolver 8.8.8.8 8.8.4.4;
+
+        location / {
+            proxy_pass              http://127.0.0.1:8153/;
+            proxy_set_header        Host            \$host;
+            proxy_set_header        X-Real-IP       \$remote_addr;
+            proxy_set_header        X-Forwarded-For \$proxy_add_x_forwarded_for;
+            proxy_set_header        X-Forwarded-Proto \$scheme;
+        }
+}
+
 EOF
-# restart nginx
-/etc/init.d/nginx restart
+
+    /etc/init.d/nginx restart
+fi
+
+# and run autorenew always
+echo "Attempting cert renew"
+certbot-auto renew --quiet --no-self-upgrade --renew-hook "/etc/init.d/nginx restart" "$LE_ENVIRONMENT"
+
+# add cron job to renew
+CRONFILE="/etc/cron.d/certbot"
+if [[ ! -f "$CRONFILE" ]]; then
+    HOUR1=$((${RANDOM} % 12 + 1))
+    HOUR2=$(((${HOUR1} + 11)%24))
+    MINUTE=$((${RANDOM} % 60))
+    echo "Scheduling cron job for renew to run at $HOUR1:$MINUTE and $HOUR2:$MINUTE"
+    echo "$MINUTE $HOUR1,$HOUR2 * * * root /root/letsencrypt.sh" > "$CRONFILE"
+fi
+
+
+# overwrite nginx config
+
+
+# stuff will reside here:
+# Cert: /etc/letsencrypt/live/gocd.cd-example.com/fullchain.pem
+# Chain: /etc/letsencrypt/live/gocd.cd-example.com/chain.pem
+# Key: /etc/letsencrypt/live/gocd.cd-example.com/privkey.pem
+
+
+eofscript
+
+# run the script
+chmod +x /root/letsencrypt.sh
+/root/letsencrypt.sh
+
+# and run it on startup too!
 

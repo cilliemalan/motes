@@ -1,7 +1,14 @@
 # Continuous Delivery Example
-An example of CI and CD for a small Node.js project
+An example of getting a GoCD server up and running on GCP.
 
 # Getting Started
+The process will involve these steps:
+1. Register domain on GCP
+2. Register domain with registrar, wait for NS records to propogate
+3. Provision GoCD server
+
+Easy-peasy!
+
 The first thing you will need is to get all the prereqs:
 
 ## Prerequisites
@@ -50,11 +57,29 @@ loaded whenever Terraform is run.
    *Networking* -> *Cloud DNS*, or by just opening `terraform.tfstate` and looking for
    the cached nameserver records.
 
-   You will need to log into your registrar dashboard and update the NS (nameserver)
-   records for your domain.
+## Part 2: Register your domain/update NS records
+Next you will need to log into your registrar and either buy the domain you specified
+(if you havent already) and update the NS (nameserver) for it.
 
-   If this is a .com domain the records will take a few minutes to update. If it's a random
-   other domain (like .info or something) **this can take a few days**.
+For example, here is the setup for cd-example.com on [Namecheap](https://www.namecheap.com)
+
+1. On GCP head to [Cloud DNS](https://console.cloud.google.com/networking/dns/zones)
+   ![The console](https://i.imgur.com/NTSKLEA.png "uptop")
+
+2. Registrar setup:
+   ![Registrar setup](https://i.imgur.com/N5P6AhT.png "Registrar setup")
+
+3. Then on Namecheap console:
+   ![Change nameservers](https://i.imgur.com/63MimGW.png "Change them NS recs")
+
+4. Verify that it has propogated:
+   ![On Windows](https://i.imgur.com/dhz8jx3.png "On windows")
+
+   Or Linux:
+   ![On Linux](https://i.imgur.com/yx60NeY.png "On linux")
+
+If this is a .com domain the records will take a few minutes to update. If it's a random
+other domain (like .info or something) **this can take a few days**.
 
 ## Part 2: Create our GoCD server
 The next step is to create our GoCD server
@@ -76,75 +101,16 @@ the infrastructure has been created,* **Terraform will recreate the gocd server*
    terraform apply
    ```
 
-   This will create your server. This will take about 10 minutes.
+   This will create your server. This will take about 6-7 minutes. Note the server will
+   start and be responsive (have the green check) before the init script is done. You
+   will be able to hit it in your browser once setup is done. If you want to check
+   progress you can SSH in and `tail -f /var/log/syslog`.
 
-2. Next we need to register certificates for the server. For this step to work, you will
-   need to wait for the NS records to propogate. You can check whether or not this has
-   happened by running `nslookup gocd.<your domain>` on windows
-   or `host gocd.<your domain>` on linux. for example:
-
-   ```
-    >nslookup gocd.cd-example.com
-
-    Server:  UnKnown
-    Address:  192.168.42.129
-
-    Non-authoritative answer:
-    Name:    gocd.cd-example.com
-    Address:  35.187.162.56
-   ```
-
-   Once the DNS is working, we need to provision the certs on the server. It is important
-   to not do this before it's done running the init script. You can confirm that the init
-   script is done by running:
-
-   ```
-   curl --head http://gocd.cd-example.com
-   ```
-
-   If it shows a https redirect, the init script has completed. For example:
-
-   ```
-    > curl --head http://gocd.cd-example.com
-    
-    HTTP/1.1 301 Moved Permanently
-    Server: nginx/1.12.0
-    Date: Thu, 27 Apr 2017 11:04:42 GMT
-    Content-Type: text/html
-    Content-Length: 185
-    Connection: keep-alive
-    Location: https://gocd.cd-example.com/
-   ```
-
-   To register the certificates, make sure gcloud is configured (run `gcloud init`),
-   and run:
-
-   ```
-   gcloud compute ssh gocd -- -c 'bash -s' < infrastructure-scripts/gocd-letsencrypt.sh
-   ```
-
-   *Note: if this gives you grief (i.e. on windows), just run `gcloud compute ssh gocd`
-   and paste the contents of the script into the console window. If this still griefs
-   you, ssh from the GCP console and do the same.*
-
-   This will run for a few moments. If the output ends with:
-
-   ```
-   [ ok ] Restarting nginx (via systemctl): nginx.service.
-   ```
-
-   It means everything went well and you can hit the gocd server in your browser!
-
+   Once this is done you will be able to log in:
    ![woohoo](http://i.imgur.com/fueBaml.png "woohoo")
 
    The init script creates an `admin` user with password `cdpasswd`, which you should
    probably change.
-
-
-
-
-
-
 
 
 # Changing GoCD password
@@ -155,6 +121,16 @@ the server.
 > gcloud compute ssh gocd
 
 ~$ ADMIN_PASSWORD=<password here>
-~$ echo "admin:$(python -c "import sha;from base64 import b64encode;print b64encode(sha.new('$ADMIN_PASSWORD').digest())")" | sudo tee /etc/go/passwd
-~$ exit
+~$ echo "admin:$(echo -n "$ADMIN_PASSWORD"| openssl sha1 -binary | base64)" | sudo tee /etc/go/passwd
 ```
+
+## Adding an account
+You can also add an account:
+
+```
+~$ NEW_USERNAME=<username here>
+~$ NEW_PASSWORD=<password here>
+~$ echo "$NEW_USERNAME:$(echo -n "$NEW_PASSWORD"| openssl sha1 -binary | base64)" | sudo tee -a /etc/go/passwd
+```
+
+I think you get the idea...

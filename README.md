@@ -64,24 +64,29 @@ Next you will need to log into your registrar and either buy the domain you spec
 For example, here is the setup for cd-example.com on [Namecheap](https://www.namecheap.com)
 
 1. On GCP head to [Cloud DNS](https://console.cloud.google.com/networking/dns/zones)
+
    ![The console](https://i.imgur.com/NTSKLEA.png "uptop")
 
 2. Registrar setup:
+
    ![Registrar setup](https://i.imgur.com/N5P6AhT.png "Registrar setup")
 
 3. Then on Namecheap console:
+
    ![Change nameservers](https://i.imgur.com/63MimGW.png "Change them NS recs")
 
 4. Verify that it has propogated:
+
    ![On Windows](https://i.imgur.com/dhz8jx3.png "On windows")
 
    Or Linux:
+   
    ![On Linux](https://i.imgur.com/yx60NeY.png "On linux")
 
 If this is a .com domain the records will take a few minutes to update. If it's a random
 other domain (like .info or something) **this can take a few days**.
 
-## Part 2: Create our GoCD server
+## Part 3: Create our GoCD server
 The next step is to create our GoCD server
 
 *Note: The default GOCD password is set to `cdpasswd`. If you want to change this, edit

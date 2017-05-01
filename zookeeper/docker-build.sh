@@ -6,4 +6,4 @@ REPO=motes-zookeeper
 VER=latest
 TAG="$HOST/$PROJECT/$REPO:$VER"
 
-docker build -t "$TAG" --cache-from cilliemalan/motes-zookeeper:latest .
+docker build -t "$TAG" --cache-from "$TAG" .

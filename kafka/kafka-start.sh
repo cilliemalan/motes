@@ -13,12 +13,6 @@ if [[ "$DOMAIN" =~ ([a-zA-Z0-9-]+)\..*local ]]; then
     SERVICE=${BASH_REMATCH[1]}
 fi
 
-# wait 3 seconds. Should be enough for others server to come up
-echo "Waiting 3 seconds..."
-sleep 3
-echo "Done waiting"
-
-
 # print out some notes
 if [[ -n "$SERVICE" ]]; then
     echo "Running in Kubernetes environment under service $SERVICE"

@@ -24,8 +24,6 @@ if [[ -n "$SERVICE" ]]; then
     echo "Running in Kubernetes environment under service $SERVICE"
     echo "This is pod $HOST as $(hostname -f)"
     echo "Running as broker ID $ORD"
-    echo "Other pods in this service:"
-    kubectl get pods -o name -l "$(kubectl describe "svc/$SERVICE" | grep -Ei "Selector:" | sed "s/Selector:\s*//")"
 else
     echo "Did not detect Kubernetes environment"
     echo "Running in standalone mode"

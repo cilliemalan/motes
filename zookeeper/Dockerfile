@@ -37,6 +37,8 @@ RUN \
     rm -rf CHANGES.txt README.txt NOTICE.txt CHANGES.txt README_packaging.txt build.xml \
         config contrib dist-maven docs ivy.xml ivysettings.xml recipes src \
         $ZK_DIST.jar.asc $ZK_DIST.jar.md5 $ZK_DIST.jar.sha1 && \
+    wget -q "http://storage.googleapis.com/kubernetes-release/release/v1.6.1/bin/linux/amd64/kubectl" -O "/usr/bin/kubectl"  && \
+    chmod +x "/usr/bin/kubectl" && \
     apt-get autoremove -y wget && \
     rm -rf /var/lib/apt/lists/*
 

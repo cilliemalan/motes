@@ -1,3 +1,9 @@
 #!/bin/bash
 
-docker build -t cilliemalan/motes-zookeeper:latest --cache-from cilliemalan/motes-zookeeper:latest .
+HOST=eu.gcr.io
+PROJECT=modern-kiln-165813
+REPO=motes-zookeeper
+VER=latest
+TAG="$HOST/$PROJECT/$REPO:$VER"
+
+docker build -t "$TAG" --cache-from "$TAG" .

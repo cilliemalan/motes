@@ -35,8 +35,8 @@ RUN \
 	ln -s /opt/zookeeper/lib/* /usr/share/zookeeper && \
     cd /opt/zookeeper && \
     rm -rf CHANGES.txt README.txt NOTICE.txt CHANGES.txt README_packaging.txt build.xml \
-            config contrib dist-maven docs ivy.xml ivysettings.xml recipes src \
-            $ZK_DIST.jar.asc $ZK_DIST.jar.md5 $ZK_DIST.jar.sha1 && \
+        config contrib dist-maven docs ivy.xml ivysettings.xml recipes src \
+        $ZK_DIST.jar.asc $ZK_DIST.jar.md5 $ZK_DIST.jar.sha1 && \
     apt-get autoremove -y wget && \
     rm -rf /var/lib/apt/lists/*
 

@@ -122,7 +122,7 @@
     // console.log(`using minikube ip address ${minikubeIp}:${connectPort}`);
 
     //start client
-    let runningProgram = runProgram('kubectl', ['exec', 'web', '--', 'node', '--debug=0.0.0.0:5858', '--debug-brk', '--nolazy', 'index.js'], false);
+    let runningProgram = runProgram('kubectl', ['exec', 'web', '--', 'node', '--debug=0.0.0.0:5858', '--debug-brk', '--nolazy', 'index.js'], true);
     let ondone = () => (clientConnection && clientConnection.end()) || (serverConnection && serverConnection.end());
     runningProgram.then(ondone, ondone);
 

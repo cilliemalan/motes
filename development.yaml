@@ -1,3 +1,38 @@
+# WEB
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  labels:
+    app: web
+spec:
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+      nodePort: 31030
+    - name: debug
+      port: 5858
+      targetPort: 5858
+      nodePort: 31858
+  selector:
+    app: web
+  type: NodePort
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web
+  labels:
+    app: web
+spec:
+  containers:
+  - name: web
+    image: node:latest
+    imagePullPolicy: IfNotPresent
+    command: ["sleep"]
+    args: ["1000000"]
+---
 # ZOOKEEPER
 apiVersion: v1
 kind: Service

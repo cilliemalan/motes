@@ -30,6 +30,11 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.3.0",
-    "opn": "^5.0.0"
+    "opn": "^5.0.0",
+    "mongodb": "^2.2.26",
+    "node-zookeeper-client": "^0.2.2",
+    "kafka-node": "^1.6.0",
+    "redis": "^2.7.1",
+    "bluebird": "^3.5.0"
   }
 }

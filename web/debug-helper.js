@@ -2,9 +2,11 @@
 
     const net = require("net");
     const spawn = require('child_process').spawn;
+    const opn = require('opn');
     const listenPort = 30858;
     const connectPort = 31858;
-    const minikubeIp = '192.168.99.102';
+    const webPort = 31030;
+    let minikubeIp = '192.168.99.102';
     let backlog = [];
     let connected = false;
     let terminated = false;
@@ -117,9 +119,9 @@
     await runProgram('bash', ['copy-files-to-k8s.sh'], false);
 
     //get minikube ip address
-    // console.log("finding minkube address...");
-    // let minikubeIp = await runProgram('minikube', ['ip'], false);
-    // console.log(`using minikube ip address ${minikubeIp}:${connectPort}`);
+    console.log("finding minkube address...");
+    minikubeIp = await runProgram('minikube', ['ip'], false);
+    console.log(`using minikube ip address ${minikubeIp}:${connectPort}`);
 
     //start client
     let runningProgram = runProgram('kubectl', ['exec', 'web', '--', 'node', '--debug=0.0.0.0:5858', '--debug-brk', '--nolazy', 'index.js'], true);
@@ -129,4 +131,6 @@
     //connect to client
     await connectClient(minikubeIp, connectPort);
 
+    // opens the web browser
+    opn(`http://${minikubeIp}:${webPort}`, e => console.error(`error opn-ing web browser: ${e}`));
 })();

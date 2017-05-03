@@ -9,14 +9,14 @@ const MongoClient = require('mongodb').MongoClient;
 
 bluebird.promisifyAll(redis.RedisClient.prototype);
 
-describe("Ecosystem", () => {
+describe("Ecosystem", function () {
 
     let redisClient;
     let zookeeperClient;
     let kafkaProducer;
     let kafkaConsumer;
 
-    before(() => {
+    before(function () {
         redisClient = redis.createClient({ host: 'redis' });
         zookeeperClient = zookeeper.createClient('zookeeper:2181');
         kafkaProducer = new kafka.Producer(new kafka.Client('zookeeper:2181', 'test-producer'));
@@ -35,8 +35,8 @@ describe("Ecosystem", () => {
         console.log('after');
     });
 
-    describe("Redis", () => {
-        it("should be accessible", async () => {
+    describe("Redis", function () {
+        it("should be accessible", async function () {
 
             await redisClient.setAsync("test:hello", "world");
             var v = await redisClient.getAsync("test:hello");
@@ -48,8 +48,9 @@ describe("Ecosystem", () => {
         });
     });
 
-    describe("Zookeeper", () => {
-        it("should be accessible", (done) => {
+    describe("Zookeeper", function () {
+        it("should be accessible", function (done) {
+
             zookeeperClient.on('connected', () => {
                 zookeeperClient.exists('/', (e, s) => {
                     assert.isNotOk(e);
@@ -62,8 +63,8 @@ describe("Ecosystem", () => {
     });
 
     describe("Kafka", function () {
+        it("should be accessible", function (done) {
 
-        it("should be accessible", (done) => {
             var isdone = false;
 
             function run() {
@@ -91,6 +92,7 @@ describe("Ecosystem", () => {
 
     describe('Mongo', function () {
         it('should be accessible', function (done) {
+
             const url = 'mongodb://mongo:27017/test';
             MongoClient.connect(url, (e, db) => {
                 assert.isNotOk(e);

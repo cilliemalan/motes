@@ -37,12 +37,41 @@ describe("Ecosystem", () => {
     describe("Zookeeper", () => {
         it("should be accessible", (cb) => {
             zookeeperClient.on('connected', () => {
-                zookeeperClient.exists('/', (e,s) => {
+                zookeeperClient.exists('/', (e, s) => {
                     assert.isOk(s);
                     cb(e);
                 })
             });
             zookeeperClient.connect();
         });
-    })
+    });
+
+    describe("Kafka", () => {
+        it("should be accessible", (cb) => {
+            const producer = new kafka.Producer(new kafka.Client('zookeeper:2181', 'test-producer'));
+            const consumer = new kafka.Consumer(new kafka.Client('zookeeper:2181', 'test-consumer'), [{ topic: 'test-topic' }]);
+
+            producer.on('ready', () => {
+                producer.createTopics(['test-topic'], (e, d) => {
+                    if (e) cb(e);
+                    else {
+
+                        consumer.on('message', (message) => {
+                            assert.isOk(message);
+                            assert.equal(message.value, 'test-message');
+
+                            producer.close();
+                            consumer.close();
+                            cb();
+                        });
+
+                        producer.send([{ topic: 'test-topic', messages: ['test-message'] }], (e, d) => {
+                            if (e) cb(e);
+                        });
+                    }
+                })
+            });
+
+        });
+    });
 });

@@ -49,12 +49,12 @@ describe("Ecosystem", () => {
     });
 
     describe("Zookeeper", () => {
-        it("should be accessible", (cb) => {
+        it("should be accessible", (done) => {
             zookeeperClient.on('connected', () => {
                 zookeeperClient.exists('/', (e, s) => {
                     assert.isNotOk(e);
                     assert.isOk(s);
-                    cb();
+                    done();
                 })
             });
             zookeeperClient.connect();
@@ -63,8 +63,8 @@ describe("Ecosystem", () => {
 
     describe("Kafka", function () {
 
-        it("should be accessible", (cb) => {
-            var done = false;
+        it("should be accessible", (done) => {
+            var isdone = false;
 
             function run() {
                 kafkaProducer.createTopics(['test-topic'], (e, d) => {
@@ -74,7 +74,7 @@ describe("Ecosystem", () => {
                         assert.isOk(message);
                         assert.equal(message.value, 'test-message');
 
-                        if (!done) { cb(); done = true; }
+                        if (!isdone) { done(); isdone = true; }
                     });
 
                     kafkaProducer.send([{ topic: 'test-topic', messages: ['test-message'] }], (e, d) => {
@@ -90,11 +90,11 @@ describe("Ecosystem", () => {
     });
 
     describe('Mongo', function () {
-        it('should be accessible', function (cb) {
+        it('should be accessible', function (done) {
             const url = 'mongodb://mongo:27017/test';
             MongoClient.connect(url, (e, db) => {
                 assert.isNotOk(e);
-                db.close(cb);
+                db.close(done);
             });
         });
     });

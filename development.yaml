@@ -67,7 +67,7 @@ spec:
       containers:
       - name: zookeeper
         imagePullPolicy: IfNotPresent
-        image: eu.gcr.io/modern-kiln-165813/motes-zookeeper
+        image: eu.gcr.io/dust-motes/motes-zookeeper
         ports:
         - containerPort: 2181
           name: client
@@ -127,7 +127,7 @@ spec:
       containers:
       - name: kafka
         imagePullPolicy: IfNotPresent
-        image: eu.gcr.io/modern-kiln-165813/motes-kafka
+        image: eu.gcr.io/dust-motes/motes-kafka
         ports:
         - containerPort: 9092
           name: listener
@@ -173,7 +173,7 @@ spec:
       containers:
       - name: redis
         imagePullPolicy: IfNotPresent
-        image: eu.gcr.io/modern-kiln-165813/motes-redis
+        image: eu.gcr.io/dust-motes/motes-redis
         ports:
         - containerPort: 6379
           name: server

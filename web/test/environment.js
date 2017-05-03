@@ -72,4 +72,14 @@ describe("Ecosystem", () => {
             });
         });
     });
+
+    describe('Mongo', function () {
+        it('should be accessible', function (cb) {
+            const url = 'mongodb://mongo:27017/test';
+            MongoClient.connect(url, (e, db) => {
+                assert.isNotOk(e);
+                db.close(cb);
+            })
+        })
+    });
 });

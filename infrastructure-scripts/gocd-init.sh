@@ -208,15 +208,17 @@ fi
 # register with letsencrypt if needed
 if [[ ! -e "$CERT_DIR" ]]; then
     echo "Registering with letsencrypt using email $EMAIL..."
-    certbot-auto register --agree-tos -m "$EMAIL" --non-interactive "$LE_ENVIRONMENT"
+    certbot-auto register --agree-tos -m "$EMAIL" --non-interactive $LE_ENVIRONMENT
 fi
 
 # run certbot
 if [[ ! -e "$CERT_DIR" ]]; then
     echo "Registering certificate for $DNS_NAME"
-    certbot-auto certonly --webroot -w "$WEBROOT" -d "$DNS_NAME" --non-interactive "$LE_ENVIRONMENT"
+    certbot-auto certonly --webroot -w "$WEBROOT" -d "$DNS_NAME" --non-interactive $LE_ENVIRONMENT
 
 # Proper nginx config
+if [[ -e "/etc/letsencrypt/live/$DNS_NAME/fullchain.pem" ]]; then
+
 cat > /etc/nginx/conf.d/default.conf <<EOF
 # default server redirects to https except for .well-known
 server {
@@ -267,13 +269,14 @@ server {
 }
 
 EOF
+fi
 
     /etc/init.d/nginx restart
 fi
 
 # and run autorenew always
 echo "Attempting cert renew"
-certbot-auto renew --quiet --no-self-upgrade --renew-hook "/etc/init.d/nginx restart" "$LE_ENVIRONMENT"
+certbot-auto renew --quiet --no-self-upgrade --renew-hook "/etc/init.d/nginx restart" $LE_ENVIRONMENT
 
 # add cron job to renew
 CRONFILE="/etc/cron.d/certbot"

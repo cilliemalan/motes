@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HOST=eu.gcr.io
-PROJECT=modern-kiln-165813
+PROJECT=dust-motes
 REPO=motes-zookeeper
 VER=latest
 TAG="$HOST/$PROJECT/$REPO:$VER"

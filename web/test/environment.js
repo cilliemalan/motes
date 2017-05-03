@@ -13,12 +13,26 @@ describe("Ecosystem", () => {
 
     let redisClient;
     let zookeeperClient;
+    let kafkaProducer;
+    let kafkaConsumer;
 
     before(() => {
         redisClient = redis.createClient({ host: 'redis' });
         zookeeperClient = zookeeper.createClient('zookeeper:2181');
+        kafkaProducer = new kafka.Producer(new kafka.Client('zookeeper:2181', 'test-producer'));
+        kafkaConsumer = new kafka.Consumer(new kafka.Client('zookeeper:2181', 'test-consumer'), [{ topic: 'test-topic' }]);
 
         bluebird.promisifyAll(zookeeperClient);
+
+        console.log('before');
+    });
+
+    after(function () {
+        zookeeperClient.close();
+        kafkaProducer.close();
+        kafkaConsumer.close();
+
+        console.log('after');
     });
 
     describe("Redis", () => {
@@ -38,38 +52,40 @@ describe("Ecosystem", () => {
         it("should be accessible", (cb) => {
             zookeeperClient.on('connected', () => {
                 zookeeperClient.exists('/', (e, s) => {
+                    assert.isNotOk(e);
                     assert.isOk(s);
-                    cb(e);
+                    cb();
                 })
             });
             zookeeperClient.connect();
         });
     });
 
-    describe("Kafka", () => {
+    describe("Kafka", function () {
+
         it("should be accessible", (cb) => {
-            const producer = new kafka.Producer(new kafka.Client('zookeeper:2181', 'test-producer'));
-            const consumer = new kafka.Consumer(new kafka.Client('zookeeper:2181', 'test-consumer'), [{ topic: 'test-topic' }]);
             var done = false;
 
-            producer.on('ready', () => {
-                producer.createTopics(['test-topic'], (e, d) => {
-                    if (e) cb(e);
-                    else {
+            function run() {
+                kafkaProducer.createTopics(['test-topic'], (e, d) => {
+                    assert.isNotOk(e);
 
-                        consumer.on('message', (message) => {
-                            assert.isOk(message);
-                            assert.equal(message.value, 'test-message');
+                    kafkaConsumer.on('message', (message) => {
+                        assert.isOk(message);
+                        assert.equal(message.value, 'test-message');
 
-                            if (!done) { cb(); done = true; }
-                        });
+                        if (!done) { cb(); done = true; }
+                    });
 
-                        producer.send([{ topic: 'test-topic', messages: ['test-message'] }], (e, d) => {
-                            if (e) cb(e);
-                        });
-                    }
-                })
-            });
+                    kafkaProducer.send([{ topic: 'test-topic', messages: ['test-message'] }], (e, d) => {
+                        assert.isNotOk(e);
+                    });
+
+                });
+            }
+
+            if (kafkaProducer.ready) run();
+            else kafkaProducer.on('ready', run);
         });
     });
 
@@ -79,7 +95,7 @@ describe("Ecosystem", () => {
             MongoClient.connect(url, (e, db) => {
                 assert.isNotOk(e);
                 db.close(cb);
-            })
-        })
+            });
+        });
     });
 });

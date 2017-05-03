@@ -50,6 +50,7 @@ describe("Ecosystem", () => {
         it("should be accessible", (cb) => {
             const producer = new kafka.Producer(new kafka.Client('zookeeper:2181', 'test-producer'));
             const consumer = new kafka.Consumer(new kafka.Client('zookeeper:2181', 'test-consumer'), [{ topic: 'test-topic' }]);
+            var done = false;
 
             producer.on('ready', () => {
                 producer.createTopics(['test-topic'], (e, d) => {
@@ -60,9 +61,7 @@ describe("Ecosystem", () => {
                             assert.isOk(message);
                             assert.equal(message.value, 'test-message');
 
-                            producer.close();
-                            consumer.close();
-                            cb();
+                            if (!done) { cb(); done = true; }
                         });
 
                         producer.send([{ topic: 'test-topic', messages: ['test-message'] }], (e, d) => {
@@ -71,7 +70,6 @@ describe("Ecosystem", () => {
                     }
                 })
             });
-
         });
     });
 });

@@ -11,7 +11,7 @@ install:
 
 script:
   # eslint
-  - web/node_modules/.bin/eslint-changes
+  # web/node_modules/.bin/eslint-changes
   - web/node_modules/.bin/eslint .
-  
+
   # note: we don't build docker images here because the CD system will

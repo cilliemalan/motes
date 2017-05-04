@@ -56,7 +56,7 @@ describe("Ecosystem", function () {
                     assert.isNotOk(e);
                     assert.isOk(s);
                     done();
-                })
+                });
             });
             zookeeperClient.connect();
         });
@@ -68,17 +68,20 @@ describe("Ecosystem", function () {
             var isdone = false;
 
             function run() {
-                kafkaProducer.createTopics(['test-topic'], (e, d) => {
+                kafkaProducer.createTopics(['test-topic'], (e) => {
                     assert.isNotOk(e);
 
                     kafkaConsumer.on('message', (message) => {
                         assert.isOk(message);
                         assert.equal(message.value, 'test-message');
 
-                        if (!isdone) { done(); isdone = true; }
+                        if (!isdone) {
+                            done();
+                            isdone = true;
+                        }
                     });
 
-                    kafkaProducer.send([{ topic: 'test-topic', messages: ['test-message'] }], (e, d) => {
+                    kafkaProducer.send([{ topic: 'test-topic', messages: ['test-message'] }], (e) => {
                         assert.isNotOk(e);
                     });
 

@@ -38,7 +38,10 @@
             });
 
             // and wait for connection
-            server.listen(listenPort, () => { console.log(`Listening on port ${listenPort}`); resolve(); });
+            server.listen(listenPort, () => {
+                console.log(`Listening on port ${listenPort}`);
+                resolve();
+            });
             server.on('error', e => reject(e));
         });
     }
@@ -49,7 +52,10 @@
             console.log(`starting ${cmd}`);
             const program = spawn(cmd, args, { stdio: chainstdio && "inherit" });
             if (!chainstdio) {
-                program.stdout.on('data', data => { output += data; console.log(`[${cmd}]: ${data.toString()}`); });
+                program.stdout.on('data', data => {
+                    output += data;
+                    console.log(`[${cmd}]: ${data.toString()}`);
+                });
                 program.stderr.on('data', data => console.log(`[${cmd}]: ${data.toString()}`));
             }
             program.on('exit', (code) => {
@@ -68,7 +74,11 @@
         return new Promise((resolve, reject) => {
             connected = false;
             if (clientConnection) {
-                try { clientConnection.end(); } catch (_) { };
+                try {
+                    clientConnection.end();
+                } catch (_) {
+
+                }
                 clientConnection = null;
             }
 
@@ -78,7 +88,7 @@
                 connected = true;
 
                 //send backlog of packets
-                if(backlog.length) {
+                if (backlog.length) {
                     console.log(`Sending backlog of ${backlog.length} packets`);
                     backlog.forEach(p => clientConnection.write(p));
                 }
@@ -115,7 +125,7 @@
     await serverListen();
 
     //copy files in
-    console.log("preparing pod...")
+    console.log("preparing pod...");
     await runProgram('bash', ['copy-files-to-k8s.sh'], false);
 
     //get minikube ip address

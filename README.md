@@ -54,8 +54,21 @@ loaded whenever Terraform is run.
 
 3. Once the DNS recource has been created we need to check which nameservers it wants
    you to set for your domain. This can be found on your GCP control panel under
-   *Networking* -> *Cloud DNS*, or by just opening `terraform.tfstate` and looking for
-   the cached nameserver records.
+   *Networking* -> *Cloud DNS*, or by just running `terraform show` and looking for
+   the nameserver records.
+
+   ```
+   google_dns_managed_zone.dns:
+     id = project-zone
+     description = Our project DNS zone
+     dns_name = cd-example.com.
+     name = project-zone
+     name_servers.# = 4
+     name_servers.0 = ns-cloud-a1.googledomains.com.
+     name_servers.1 = ns-cloud-a2.googledomains.com.
+     name_servers.2 = ns-cloud-a3.googledomains.com.
+     name_servers.3 = ns-cloud-a4.googledomains.com.
+   ```
 
 ## Part 2: Register your domain/update NS records
 Next you will need to log into your registrar and either buy the domain you specified

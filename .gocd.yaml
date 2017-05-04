@@ -8,20 +8,20 @@ pipelines:
         git: https://github.com/cilliemalan/motes.git
         branch: master
     stages:
-      # - checks:
-      #   jobs:
-      #     environment:
-      #       - script: printenv
-      #     docker:
-      #       - script: "docker --version"
-      #     kubernetes:
-      #       - script: "kubectl version"
-      #     terraform:
-      #       - script: "terraform --version"
-      #     node:
-      #       - script: |
-      #           node --version
-      #           npm --version
+      - checks:
+        jobs:
+          environment:
+            - script: printenv
+          docker:
+            - script: "docker --version"
+          kubernetes:
+            - script: "kubectl version"
+          terraform:
+            - script: "terraform --version"
+          node:
+            - script: |
+                node --version
+                npm --version
       - prerequisites:
           jobs:
             npm:

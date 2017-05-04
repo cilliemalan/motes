@@ -299,9 +299,9 @@ fi
 
 
 # stuff will reside here:
-# Cert: /etc/letsencrypt/live/gocd.cd-example.com/fullchain.pem
-# Chain: /etc/letsencrypt/live/gocd.cd-example.com/chain.pem
-# Key: /etc/letsencrypt/live/gocd.cd-example.com/privkey.pem
+# Cert: /etc/letsencrypt/live/$DNS_NAME/fullchain.pem
+# Chain: /etc/letsencrypt/live/$DNS_NAME/chain.pem
+# Key: /etc/letsencrypt/live/$DNS_NAME/privkey.pem
 
 
 eofscript

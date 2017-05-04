@@ -4,9 +4,14 @@ node_js:
 cache: yarn
 
 install:
-  - pushd web && npm install eslint-changes && popd
+  - cd web
+  - npm install
+  - npm install eslint-changes
+  - cd ..
 
 script:
-  #eslint
+  # eslint
   - web/node_modules/.bin/eslint-changes
   - web/node_modules/.bin/eslint .
+  
+  # note: we don't build docker images here because the CD system will

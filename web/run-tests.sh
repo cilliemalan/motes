@@ -10,7 +10,7 @@ NC='\033[0m' # No Color
 ./copy-files-to-k8s.sh
 
 # run tests
-kubectl exec $POD -t -- npm test
+kubectl exec $POD -t -- npm run test-all
 
 # check output
 if [[ $? == 0 ]]; then

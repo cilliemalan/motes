@@ -7,9 +7,3 @@ pipelines:
       github:
         git: https://github.com/cilliemalan/motes.git
         branch: master
-    stages:
-      - prerequisites:
-        jobs:
-          npm:
-            tasks:
-              - script: cd web && npm install

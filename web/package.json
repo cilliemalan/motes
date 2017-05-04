@@ -37,6 +37,7 @@
     "kafka-node": "^1.6.0",
     "redis": "^2.7.1",
     "bluebird": "^3.5.0",
-    "eslint": "^3.19.0"
+    "eslint": "^3.19.0",
+    "eslint-plugin-import": "^2.2.0"
   }
 }

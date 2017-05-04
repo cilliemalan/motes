@@ -9,19 +9,24 @@ pipelines:
         branch: master
     stages:
       - checks:
-        jobs:
-          environment:
-            - script: printenv
-          docker:
-            - script: "docker --version"
-          kubernetes:
-            - script: "kubectl version"
-          terraform:
-            - script: "terraform --version"
-          node:
-            - script: |
-                node --version
-                npm --version
+          jobs:
+            environment:
+              tasks:
+                - script: printenv
+            docker:
+              tasks:
+                - script: "docker --version"
+            kubernetes:
+              tasks:
+                - script: "kubectl version"
+            terraform:
+              tasks:
+              - script: "terraform --version"
+            node:
+              tasks:
+                - script: |
+                    node --version
+                    npm --version
       - prerequisites:
           jobs:
             npm:

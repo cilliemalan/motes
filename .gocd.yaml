@@ -1,5 +1,5 @@
 pipelines:
-  developmentpipe:
+  build:
     group: motes
     label_template: "${github[:8]}"
     locking: off
@@ -12,8 +12,4 @@ pipelines:
           jobs:
             npm: # name of the job
               tasks:
-                - exec: # indicates type of task
-                    command: echo
-                    arguments:
-                      - hello
-                      - world
+                - script: echo hello world

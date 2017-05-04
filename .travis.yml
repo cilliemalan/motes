@@ -20,6 +20,6 @@ install:
 script:
   # eslint
   # web/node_modules/.bin/eslint-changes
-  - web/node_modules/.bin/eslint .
+  - "web/node_modules/.bin/eslint --ignore-pattern node_modules ."
 
   # note: we don't build docker images here because the CD system will

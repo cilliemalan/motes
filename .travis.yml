@@ -3,3 +3,8 @@ node_js:
   - "7"
 cache: yarn
 
+install:
+  - cd web && npm install eslint-changes
+
+script:
+  - web/node_modules/.bin/eslint-changes

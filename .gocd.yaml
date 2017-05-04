@@ -12,19 +12,24 @@ pipelines:
           jobs:
             environment:
               tasks:
-                - script: printenv
-            docker:
-              tasks:
-                - script: "docker --version"
-            kubernetes:
-              tasks:
-                - script: "kubectl version"
-            terraform:
-              tasks:
-              - script: "terraform --version"
-            node:
-              tasks:
                 - script: |
+                    echo Running on: "$(uname -a)"
+                    echo Environment:
+                    printenv
+                    echo && echo
+
+                    sudo -v && echo 'may sudo' || true
+
+                    echo "Docker:"
+                    docker --version
+                    
+                    echo "Kubectl:"
+                    kubectl version
+
+                    echo "Terraform:"
+                    terraform --version
+
+                    echo "Node:"
                     node --version
                     npm --version
       - prerequisites:

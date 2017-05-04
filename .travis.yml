@@ -4,7 +4,9 @@ node_js:
 cache: yarn
 
 install:
-  - cd web && npm install eslint-changes
+  - pushd web && npm install eslint-changes && popd
 
 script:
+  #eslint
   - web/node_modules/.bin/eslint-changes
+  - web/node_modules/.bin/eslint .

@@ -8,9 +8,12 @@ pipelines:
         git: https://github.com/cilliemalan/motes.git
         branch: master
     stages:
-      - build: # name of stage
+      - prerequisites: # name of stage
           jobs:
-            build: # name of the job
+            npm: # name of the job
               tasks:
-              - exec: # indicates type of task
-                  command: echo hello world
+                - exec: # indicates type of task
+                    command: echo
+                    arguments:
+                      - hello
+                      - world

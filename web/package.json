@@ -29,16 +29,19 @@
     "lodash": "^4.17.4"
   },
   "devDependencies": {
+    "bluebird": "^3.5.0",
     "chai": "^3.5.0",
+    "eslint": "^3.19.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-node": "^4.2.2",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "kafka-node": "^1.6.0",
     "mocha": "^3.3.0",
-    "opn": "^5.0.0",
     "mongodb": "^2.2.26",
     "node-zookeeper-client": "^0.2.2",
-    "kafka-node": "^1.6.0",
-    "redis": "^2.7.1",
-    "bluebird": "^3.5.0",
-    "eslint": "^3.19.0",
-    "eslint-plugin-import": "^2.2.0",
-    "eslint-config-standard": "^10.2.1"
+    "opn": "^5.0.0",
+    "redis": "^2.7.1"
   }
 }

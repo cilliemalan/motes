@@ -10,6 +10,8 @@ pipelines:
     stages:
       - checks:
         jobs:
+          environment:
+            - script: printenv
           docker:
             - script: "docker --version"
           kubernetes:
@@ -18,18 +20,18 @@ pipelines:
             - script: "terraform --version"
           node:
             - script: |
-              node --version
-              npm --version
+                node --version
+                npm --version
       - prerequisites:
           jobs:
             npm:
               tasks:
                 - script: |
-                  cd web
-                  npm install
+                    cd web
+                    npm install
       - tests:
           jobs:
             runtests:
               - script: |
-                cd web
-                npm test
+                  cd web
+                  npm test

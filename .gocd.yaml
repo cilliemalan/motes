@@ -7,3 +7,19 @@ pipelines:
       github:
         git: https://github.com/cilliemalan/motes.git
         branch: master
+    pipelines:
+      developmentpipe:
+        group: motes
+        label_template: "${github[:8]}"
+        locking: off
+        materials:
+          github:
+            git: https://github.com/cilliemalan/motes.git
+            branch: master
+        stages:
+          - build: # name of stage
+              jobs:
+                build: # name of the job
+                  tasks:
+                  - exec: # indicates type of task
+                      command: echo hello world

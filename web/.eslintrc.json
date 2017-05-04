@@ -1,0 +1,47 @@
+{
+    "parserOptions": {
+        "ecmaVersion": 8
+    },
+    "env": {
+        "node": true
+    },
+    "globals": {
+        "Promise": true
+    },
+    "extends": "eslint:recommended",
+    "rules": {
+        "indent": [
+            "error",
+            4
+        ],
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "camelcase": 2,
+        "array-bracket-spacing": 1,
+        "array-callback-return": 2,
+        "comma-spacing": 1,
+        "brace-style": 2,
+        "constructor-super": 2,
+        "no-this-before-super": 2,
+        "yoda": 2,
+        "no-labels": 2,
+        "no-useless-call": 1,
+        "no-useless-computed-key": 1,
+        "no-useless-concat": 1,
+        "no-useless-constructor": 1,
+        "no-useless-escape": 1,
+        "no-useless-rename": 1,
+        "no-new-symbol": 2,
+        "no-alert": 2,
+        "no-with": 2,
+        "no-undef":"warn",
+        "no-console":"off",
+        "no-empty": 0
+    }
+}

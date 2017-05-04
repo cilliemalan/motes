@@ -8,7 +8,7 @@ pipelines:
         git: https://github.com/cilliemalan/motes.git
         branch: master
     pipelines:
-      developmentpipe:
+      developmentpipe2:
         group: motes
         label_template: "${github[:8]}"
         locking: off

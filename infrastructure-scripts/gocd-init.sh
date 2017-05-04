@@ -163,6 +163,12 @@ then
     # start
     /etc/init.d/go-server start
     /etc/init.d/go-agent start
+
+    # some plugins
+    PLUGIN_DIR=/var/lib/go-server/plugins/external
+    wget https://github.com/tomzo/gocd-yaml-config-plugin/releases/download/0.4.0/yaml-config-plugin-0.4.0.jar -O "$PLUGIN_DIR/yaml-config-plugin-0.4.0.jar"
+    wget https://github.com/tomzo/gocd-json-config-plugin/releases/download/0.2.0/json-config-plugin-0.2.jar -O "$PLUGIN_DIR/json-config-plugin-0.2.jar"
+    
     # set admin password
     ADMIN_PASSWORD="cdpasswd"
     echo "admin:$(python -c "import sha;from base64 import b64encode;print b64encode(sha.new('$ADMIN_PASSWORD').digest())")" > /etc/go/passwd
@@ -293,9 +299,9 @@ fi
 
 
 # stuff will reside here:
-# Cert: /etc/letsencrypt/live/gocd.cd-example.com/fullchain.pem
-# Chain: /etc/letsencrypt/live/gocd.cd-example.com/chain.pem
-# Key: /etc/letsencrypt/live/gocd.cd-example.com/privkey.pem
+# Cert: /etc/letsencrypt/live/$DNS_NAME/fullchain.pem
+# Chain: /etc/letsencrypt/live/$DNS_NAME/chain.pem
+# Key: /etc/letsencrypt/live/$DNS_NAME/privkey.pem
 
 
 eofscript

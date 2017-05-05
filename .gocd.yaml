@@ -23,3 +23,11 @@ pipelines:
                     npm --version
                     npm install
                     echo "ran npm install"
+            dev-cluster:
+              tasks:
+                - script: "echo Create dev cluster if needed..."
+      - code-checks:
+          jobs:
+            lint:
+              tasks:
+                - script: "echo Lint..."

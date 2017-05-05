@@ -1,5 +1,5 @@
 pipelines:
-  build:
+  prepare:
     group: motes
     label_template: "${github[:8]}"
     locking: off

@@ -19,4 +19,7 @@ pipelines:
               tasks:
                 - script: |
                     cd web
+                    echo "now in $(pwd)"
+                    npm --version
                     npm install
+                    echo "ran npm install"

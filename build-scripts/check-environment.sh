@@ -21,7 +21,7 @@ echo "Checking Docker:"
 if docker --version; then green "Docker good!"; else red "Docker fail"; STATUS=1; fi
 
 echo "Checking Kubectl:"
-if kubectl version; then green "Kubectl good!"; else red "Kubectl fail"; STATUS=1; fi
+if [[ -n $"(which kubectl)" ]]; then green "Kubectl good!"; else red "Kubectl fail"; STATUS=1; fi
 
 echo "Checking Terraform:"
 if terraform --version; then green "Terraform good!"; else red "Terraform fail"; STATUS=1; fi

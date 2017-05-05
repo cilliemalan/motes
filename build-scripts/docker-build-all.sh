@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# builds the dockerfile in the current dir. if --canary is passed, version will be
-# canary. If --pull is passed, will pull. Otherwise cache.
+# builds the dockerfile in the current dir.
+# if --canary is passed, version will be canary. Otherwise "latest"
+# If --pull is passed, will pull. Otherwise cache.
+# If --push, will gcloud push
 buildcurrent() {
     if [[ " $* " =~ " --canary " ]]; then
     VER=canary
@@ -20,6 +22,10 @@ buildcurrent() {
     else
         # build with cache
         docker build -t "$TAG" --cache-from "$TAG" .
+    fi
+
+    if [[ " $* " =~ " --push " ]]; then
+        gcloud docker -- push "$TAG"
     fi
 }
 

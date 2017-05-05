@@ -17,12 +17,7 @@ pipelines:
           jobs:
             npm:
               tasks:
-                - script: |
-                    cd web
-                    echo "now in $(pwd)"
-                    npm --version
-                    npm install
-                    echo "ran npm install"
+                - script: build-scripts/prerequisites.sh
             dev-cluster:
               tasks:
                 - script: "echo Create dev cluster if needed..."
@@ -30,4 +25,4 @@ pipelines:
           jobs:
             lint:
               tasks:
-                - script: "echo Lint..."
+                - script: build-scripts/lint.sh

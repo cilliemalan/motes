@@ -35,7 +35,7 @@ of seconds and it should load it's pipeline config from the repo.
 
 ![Editing the repo](https://i.imgur.com/a9SdHMd.png)
 
-![Et Voila](https://i.imgur.com/GSPCyEH.png)
+![Et voilà](https://i.imgur.com/GSPCyEH.png)
 
 *(Note: Screenshot may be old)*
 

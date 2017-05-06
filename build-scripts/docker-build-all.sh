@@ -1,16 +1,11 @@
 #!/bin/bash
 
 # builds the dockerfile in the current dir.
-# if --canary is passed, version will be canary. Otherwise "latest"
 # If --pull is passed, will pull. Otherwise cache.
 # If --push, will gcloud push
 buildcurrent() {
-    if [[ " $* " =~ " --canary " ]]; then
-    VER=canary
-    else
-        VER=latest
-    fi
 
+    VER=latest
     HOST=eu.gcr.io
     PROJECT="$PROJECT_ID"
     REPO=motes-${PWD##*/}

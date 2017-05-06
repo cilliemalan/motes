@@ -1,4 +1,9 @@
 pipelines:
+  # the prepare pipeline will perform multiple checks on
+  # the environment to prepare for the build. This pipe
+  # will check the agent environment, run lints and
+  # code checks, and check if the dev cluster is up
+  # and running
   prepare:
     group: motes
     label_template: "${github[:8]}"

@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# Tests that the build agent environment is adequite.
+# This script returns nonzero if anything is amiss.
+
+
+# run inside proj dir and use project env
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$DIR"
+source "build-scripts/utilities/project-env.sh"
+
 
 red() { echo -e "\033[0;31m$@\033[0m"; }
 green() { echo -e "\033[0;32m$@\033[0m"; }

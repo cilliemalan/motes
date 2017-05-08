@@ -2,7 +2,7 @@
 
 # This script sets up a few environment variables for our project
 
-export PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+export PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )"
 
 function get_parm()
 {

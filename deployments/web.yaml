@@ -1,0 +1,37 @@
+# WEB
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  labels:
+    app: web
+spec:
+  ports:
+    - name: http
+      port: 80
+    - name: https
+      port: 443
+  clusterIP: None
+  selector:
+    app: web
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  replicas: $TRIPLESCALE
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          imagePullPolicy: IfNotPresent
+          image: eu.gcr.io/$PROJECT_ID/motes-web:$CONTAINER_VERSION
+          ports:
+            - name: http
+              containerPort: 80
+            - name: https
+              containerPort: 443

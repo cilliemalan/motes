@@ -27,11 +27,7 @@ green() { echo -e "\033[0;32m$@\033[0m"; }
 # If --push, will gcloud push
 buildcurrent() {
 
-    VER=latest
-    HOST=eu.gcr.io
-    PROJECT="$PROJECT_ID"
-    REPO=motes-${PWD##*/}
-    TAG="$HOST/$PROJECT/$REPO:$VER"
+    TAG=$(imagetag "${PWD##*/}")
 
     if [[ " $* " =~ " --pull " ]]; then
         # build from scratch

@@ -12,3 +12,14 @@ function get_parm()
 export PROJECT_ID=$(get_parm project_id)
 export PROJECT_REGION=$(get_parm project_region)
 export DNS_NAME=$(get_parm domain)
+
+
+imagetag() {
+    local ver=latest
+    local host=eu.gcr.io
+    local project="$PROJECT_ID"
+    local repo="motes-$1"
+    echo "$host/$project/$repo:$ver"
+}
+
+export -f imagetag

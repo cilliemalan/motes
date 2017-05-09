@@ -104,6 +104,7 @@ fi
 
 # some per-env things
 DEFAULTSCALE=0
+export DATADISKSIZE=1Gi
 export CONTAINER_VERSION=latest
 case "$ENVIRONMENT" in
     dev)
@@ -117,6 +118,7 @@ case "$ENVIRONMENT" in
     prod)
         DEFAULTSCALE=5
         CONTAINER_VERSION=prod
+        DATADISKSIZE=20Gi
         ;;
     *)
         echo "Invalid environment"
@@ -132,6 +134,7 @@ fi
 export DOUBLESCALE=$((SCALE*2))
 export TRIPLESCALE=$((SCALE*3))
 
+
 KUBE_CONTEXT=$(kubectl config current-context)
 
 if [[ -z "$KUBE_CONTEXT" || $? != 0 ]]; then
@@ -145,6 +148,7 @@ echo "  Kubernetes ctx:    $KUBE_CONTEXT"
 echo "  Project:           $PROJECT_ID"
 echo "  Scale:             $SCALE"
 echo "  Environment:       $ENVIRONMENT"
+echo "  Data Disk Size:    $DATADISKSIZE"
 echo "  Container version: $CONTAINER_VERSION"
 
 

@@ -64,4 +64,4 @@ echo "Running npm inside pod"
 kubectl exec -i debug-runner -- npm install
 
 echo "running program inside pod"
-kubectl exec debug-runner -- node --debug=0.0.0.0:5858 --debug-brk -nolazy index.js
+kubectl exec debug-runner -- node --debug=0.0.0.0:5858 -nolazy index.js

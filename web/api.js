@@ -7,6 +7,8 @@ module.exports = router;
 
 const wrap = fn => (...args) => fn(...args).catch(args[2]);
 
+//const delayAsync = howlong => new Promise((resolve) => setTimeout(() => resolve(), howlong));
+
 router.getAsync = (url, handler) => router.get(url, wrap(handler));
 router.postAsync = (url, handler) => router.post(url, wrap(handler));
 
@@ -20,7 +22,7 @@ router.postAsync('/zookeeper', async (req, res) => {
     try {
         res.json({ success: true });
     } catch (e) {
-        res.json({ success: false, error: e.toString() });
+        res.status(500).json({ success: false, error: e.toString() });
     }
 });
 
@@ -29,16 +31,16 @@ router.postAsync('/mongo', async (req, res) => {
     try {
         res.json({ success: true });
     } catch (e) {
-        res.json({ success: false, error: e.toString() });
+        res.status(500).json({ success: false, error: e.toString() });
     }
 });
 
 // test redis url
-router.postAsync('/zookeeper', async (req, res) => {
+router.postAsync('/redis', async (req, res) => {
     try {
         res.json({ success: true });
     } catch (e) {
-        res.json({ success: false, error: e.toString() });
+        res.status(500).json({ success: false, error: e.toString() });
     }
 });
 
@@ -47,7 +49,7 @@ router.postAsync('/kafka', async (req, res) => {
     try {
         res.json({ success: true });
     } catch (e) {
-        res.json({ success: false, error: e.toString() });
+        res.status(500).json({ success: false, error: e.toString() });
     }
 });
 
@@ -56,7 +58,7 @@ router.getAsync('/kafka', async (req, res) => {
     try {
         res.json({ success: true, message: ['hello world'] });
     } catch (e) {
-        res.json({ success: false, error: e.toString() });
+        res.status(500).json({ success: false, error: e.toString() });
     }
 });
 
@@ -65,6 +67,6 @@ router.postAsync('/graphite', async (req, res) => {
     try {
         res.json({ success: true });
     } catch (e) {
-        res.json({ success: false, error: e.toString() });
+        res.status(500).json({ success: false, error: e.toString() });
     }
 });

@@ -3,6 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const config = require('./package.json');
+const zk = require('./zookeeperProvider');
 module.exports = router;
 
 const wrap = fn => (...args) => fn(...args).catch(args[2]);
@@ -13,9 +14,14 @@ router.getAsync = (url, handler) => router.get(url, wrap(handler));
 router.postAsync = (url, handler) => router.post(url, wrap(handler));
 
 // api status url
-router.get('/', (req, res) => {
-    res.json({ status: 'up', version: config.version, hostname: process.env.HOSTNAME });
-});
+router.get('/', wrap(async (req, res) => {
+    res.json({
+        status: 'up',
+        version: config.version,
+        hostname: process.env.HOSTNAME,
+        instances: await zk.getNumberOfActiveServersAsync()
+    });
+}));
 
 // test zookeeper url
 router.postAsync('/zookeeper', async (req, res) => {

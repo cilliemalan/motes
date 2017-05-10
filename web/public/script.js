@@ -2,55 +2,58 @@
 
 
 function makeApiCall(path, method, body, loaderContainer) {
-    let loader;
-    if (loaderContainer) {
-        loaderContainer.innerHTML = "";
+    return new Promise((resolve) => {
 
-        loader = document.createElement('div');
-        loader.className = 'loadingring';
-        loaderContainer.appendChild(loader);
-    }
+        let loader;
+        if (loaderContainer) {
+            loaderContainer.innerHTML = "";
 
-    // headers for the request
-    const headers = new Headers();
-    if (body) {
-        headers.set('Content-Type', 'application/json');
-    }
+            loader = document.createElement('div');
+            loader.className = 'loadingring';
+            loaderContainer.appendChild(loader);
+        }
 
-    if (typeof body != undefined && body !== null && typeof body != "string") {
-        body = JSON.stringify(body);
-    }
+        // headers for the request
+        const headers = new Headers();
+        if (body) {
+            headers.set('Content-Type', 'application/json');
+        }
 
-    const requestOptions = {
-        method: method,
-        headers: headers,
-        body: body
-    };
+        if (typeof body != undefined && body !== null && typeof body != "string") {
+            body = JSON.stringify(body);
+        }
 
-    // make the request
-    return fetch(`api/${path}`, requestOptions)
-        .then(response => {
-            if (!response.ok) throw response.statusText;
+        const requestOptions = {
+            method: method,
+            headers: headers,
+            body: body
+        };
 
-            if (loader) loaderContainer.innerHTML = "";
+        // make the request
+        fetch(`api/${path}`, requestOptions)
+            .then(response => {
+                if (!response.ok) throw response.statusText;
 
-            return response.json();
-        }).catch(e => {
+                if (loader) loaderContainer.innerHTML = "";
 
-            if (loader) {
-                var errorMessage = document.createElement('span');
-                var retryButton = document.createElement('a');
-                retryButton.innerText = 'retry';
-                retryButton.href = 'javascript:void(0)';
-                retryButton.addEventListener('click', () => makeApiCall(path, method, body, loaderContainer));
-                errorMessage.append('An error occurred. ');
-                errorMessage.append(retryButton);
-                errorMessage.className = 'error';
-                loaderContainer.replaceChild(errorMessage, loader);
-            } else {
-                throw e;
-            }
-        });
+                resolve(response.json());
+            }).catch(e => {
+
+                if (loader) {
+                    var errorMessage = document.createElement('span');
+                    var retryButton = document.createElement('a');
+                    retryButton.innerText = 'retry';
+                    retryButton.href = 'javascript:void(0)';
+                    retryButton.addEventListener('click', () => makeApiCall(path, method, body, loaderContainer).then(resolve));
+                    errorMessage.append('An error occurred. ');
+                    errorMessage.append(retryButton);
+                    errorMessage.className = 'error';
+                    loaderContainer.replaceChild(errorMessage, loader);
+                } else {
+                    throw e;
+                }
+            });
+    });
 }
 
 function updateStatus(status) {

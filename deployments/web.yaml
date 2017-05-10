@@ -35,3 +35,40 @@ spec:
               containerPort: 80
             - name: https
               containerPort: 443
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-canary
+  labels:
+    app: web-canary
+spec:
+  ports:
+    - name: http
+      port: 80
+    - name: https
+      port: 443
+  clusterIP: None
+  selector:
+    app: web-canary
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: web-canary
+spec:
+  replicas: $TRIPLESCALE
+  template:
+    metadata:
+      labels:
+        app: web-canary
+    spec:
+      containers:
+        - name: web-canary
+          imagePullPolicy: IfNotPresent
+          image: eu.gcr.io/$PROJECT_ID/motes-web:$CONTAINER_VERSION
+          ports:
+            - name: http
+              containerPort: 80
+            - name: https
+              containerPort: 443

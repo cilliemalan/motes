@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const api = require('./api');
+const zk = require('./zookeeperProvider');
 
 console.log('starting...');
 
@@ -30,5 +31,10 @@ app.use('/api', api);
 
 // start!
 console.log(`start listen on port ${port}`);
-app.listen(port, () => console.log(`Listening on port ${port}`));
+app.listen(port, async () => {
+    console.log(`Listening on port ${port}`);
+    let path = await zk.registerAsync(process.env.HOSTNAME);
+    console.log(`registered with zk under ${path} as ${process.env.HOSTNAME}`);
+    console.log(`There are currently ${await zk.getNumberOfActiveServersAsync()} registered servers`);
+});
 

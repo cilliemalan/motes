@@ -35,7 +35,7 @@ function makeApiCall(path, method, body, loaderContainer) {
             if (loader) loaderContainer.innerHTML = "";
 
             return response.json();
-        }).catch(() => {
+        }).catch(e => {
 
             if (loader) {
                 var errorMessage = document.createElement('span');
@@ -47,17 +47,39 @@ function makeApiCall(path, method, body, loaderContainer) {
                 errorMessage.append(retryButton);
                 errorMessage.className = 'error';
                 loaderContainer.replaceChild(errorMessage, loader);
+            } else {
+                throw e;
             }
         });
 }
 
-makeApiCall('', 'GET', null, document.getElementById("loadingbar")).then(r => {
-    document.getElementById('info').style.display = 'block';
-    document.getElementById('servername').innerText = r.hostname;
-    document.getElementById('version').innerText = r.version;
+function updateStatus(status) {
+    document.getElementById('servername').innerText = status.hostname;
+    document.getElementById('version').innerText = status.version;
+    document.getElementById('instances').innerText = status.instances;
+}
 
+makeApiCall('', 'GET', null, document.getElementById("loadingbar")).then(status => {
+    document.getElementById('info').style.display = 'block';
     document.getElementById('controls').style.display = 'block';
+
+    updateStatus(status);
 });
+
+//periodically refresh status
+var oldCall;
+window.setInterval(() => {
+    if (!oldCall) oldCall = makeApiCall('', 'GET');
+    oldCall
+        .then(r => {
+            updateStatus(r);
+            oldCall = null;
+        })
+        .catch(e => {
+            console.error(e);
+            oldCall = null;
+        });
+}, 2500);
 
 const redistestcontainer = document.getElementById('redistestcontainer');
 const redistestbutton = document.getElementById('redistestbutton');

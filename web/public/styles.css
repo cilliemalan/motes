@@ -4,8 +4,46 @@ body {
     font-family: monospace;
     background: black;
     color:#EDB;
+    text-align: center;
 }
 
-h1 {
-    text-align: center;
+strong {
+    color:white;
+}
+
+p {
+    min-height: 20px;
+    margin:10px;
+    padding: 0;
+}
+
+.loadingring {
+    border: 3px solid #999;
+    border-radius: 50%;
+    height: 18px;
+    width: 18px;
+    display: inline-block;
+    animation: pulsate 1s ease-out;
+    animation-iteration-count: infinite; 
+    opacity: 0.0
+}
+
+@keyframes pulsate {
+    0% {transform: scale(0.6, 0.6); opacity: 0.0;}
+    60% {opacity: 0.8;}
+    100% {transform: scale(1.2, 1.2); opacity: 0.0;}
+}
+
+.error {
+    color: red;
+}
+
+.button {
+    height: 18px;
+    display: inline-block;
+}
+
+#browserold {
+    margin: 10px;
+    color:white;
 }

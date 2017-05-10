@@ -1,0 +1,12 @@
+{
+    "parserOptions": {
+        "ecmaVersion": 8
+    },
+    "env": {
+        "node": false,
+        "browser": true
+    },
+    "globals": {
+        "Promise": true
+    }
+}

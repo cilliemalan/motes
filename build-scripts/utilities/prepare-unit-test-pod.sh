@@ -83,5 +83,12 @@ if [[ $RUNNING == 0 ]]; then
     exit 3;
 fi
 
+# copy files in
+echo "Copying in files..."
+pushd web
+tar -X .gitignore -cpzf - . | kubectl exec -i unit-tests -- tar -xpzf - .;
+popd
+
 # run npm install again
+echo "Running npm install"
 kubectl exec unit-tests -t -- npm install

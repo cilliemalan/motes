@@ -1,0 +1,37 @@
+# WEB
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-proxy
+  labels:
+    app: grafana-proxy
+spec:
+  ports:
+    - name: http
+      port: 80
+    - name: https
+      port: 443
+  type: LoadBalancer
+  selector:
+    app: grafana-proxy
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: grafana-proxy
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: grafana-proxy
+    spec:
+      containers:
+        - name: grafana-proxy
+          imagePullPolicy: IfNotPresent
+          image: eu.gcr.io/$PROJECT_ID/motes-grafana-proxy:$CONTAINER_VERSION
+          ports:
+            - name: http
+              containerPort: 80
+            - name: https
+              containerPort: 443

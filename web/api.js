@@ -26,7 +26,8 @@ router.get('/', wrap(async (req, res) => {
 // test zookeeper url
 router.postAsync('/zookeeper', async (req, res) => {
     try {
-        res.json({ success: true });
+        const instances = await zk.getNumberOfActiveServersAsync();
+        res.json({ success: true, instances });
     } catch (e) {
         res.status(500).json({ success: false, error: e.toString() });
     }

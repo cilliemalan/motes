@@ -1,0 +1,10 @@
+{
+    "globals": {
+        "Promise": true,
+        "it": true,
+        "after": true,
+        "describe": true,
+        "before": true,
+        "beforeEach": true
+    }
+}

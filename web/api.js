@@ -6,7 +6,6 @@ const router = express.Router();
 const bluebird = require('bluebird');
 
 const redis = require("redis");
-const kafka = require('kafka-node');
 const MongoClient = require('mongodb').MongoClient;
 bluebird.promisifyAll(redis.RedisClient.prototype);
 
@@ -56,7 +55,7 @@ router.postAsync('/mongo', async (req, res) => {
                 });
             });
         });
-        
+
         res.json({ success: true });
     } catch (e) {
         console.error(e);

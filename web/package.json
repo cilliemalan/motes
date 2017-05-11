@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha --grep \"^(?!Ecosystem).+\"",
     "test-all": "mocha",
-    "test-e2e": "which phantomjs",
+    "test-e2e": "ghostjs e2e/*.js",
     "start": "node ."
   },
   "repository": {
@@ -34,7 +34,10 @@
     "mongodb": "^2.2.26",
     "node-zookeeper-client": "^0.2.2",
     "redis": "^2.7.1",
-    "body-parser": "^1.17.1"
+    "body-parser": "^1.17.1",
+    "graphite": "^0.0.7",
+    "on-finished": "~2.3.0",
+    "on-headers": "~1.0.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",

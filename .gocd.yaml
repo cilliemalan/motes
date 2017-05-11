@@ -81,26 +81,6 @@ pipelines:
             e2e-tests:
               tasks:
                 - script: "build-scripts/utilities/use-environment.sh test && build-scripts/run-e2e-tests.sh"
-      - prepare-prod-environment:
-          jobs:
-            environment:
-              tasks:
-                - script: "build-scripts/prepare-environment.sh prod"
-      - deploy-prod-environment:
-          jobs:
-            create-cluster:
-              tasks:
-                - script: "build-scripts/deploy-environment.sh prod"
-      - unit-tests-prod:
-          jobs:
-            unit-tests:
-              tasks:
-                - script: "build-scripts/utilities/use-environment.sh prod && build-scripts/run-unit-tests.sh"
-      - e2e-test-prod:
-          jobs:
-            e2e-tests:
-              tasks:
-                - script: "build-scripts/utilities/use-environment.sh prod && build-scripts/run-e2e-tests.sh"
       - final:
           jobs:
             notify:

@@ -27,19 +27,21 @@ green() { echo -e "\033[0;32m$@\033[0m"; }
 # If --push, will gcloud push
 buildcurrent() {
 
+    # use commit hash version
+    HASHTAG=$(imagetag "${PWD##*/}" "$CURRENT_VERSION")
     TAG=$(imagetag "${PWD##*/}")
 
     if [[ " $* " =~ " --pull " ]]; then
         # build from scratch
-        docker build -t "$TAG" --pull .
+        docker build -t "$HASHTAG" -t "$TAG" --pull .
     else
         # build with cache
-        docker build -t "$TAG" --cache-from "$TAG" .
+        docker build -t "$HASHTAG" -t "$TAG" --cache-from "$HASHTAG" .
     fi
 
     if [[ $? == 0 ]]; then
         if [[ " $* " =~ " --push " ]]; then
-            gcloud docker -- push "$TAG"
+            gcloud docker -- push "$HASHTAG"
         fi
     fi
 }

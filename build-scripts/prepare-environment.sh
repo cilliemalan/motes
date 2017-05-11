@@ -16,7 +16,7 @@ source "build-scripts/utilities/project-env.sh"
 
 
 if [[ -n "$ZONE" ]]; then
-    ZONEPARM="--zone '$ZONE'"
+    ZONEPARM="--zone $ZONE"
 fi
 
 

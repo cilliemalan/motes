@@ -19,7 +19,7 @@ if [[ -z "$LABEL" ]]; then
 fi
 
 if [[ -n "$ZONE" ]]; then
-    ZONEPARM="--zone '$ZONE'"
+    ZONEPARM="--zone $ZONE"
 fi
 
 CLUSTER_NAME="$LABEL-cluster"

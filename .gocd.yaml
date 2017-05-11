@@ -53,3 +53,25 @@ pipelines:
             environment:
               tasks:
                 - script: build-scripts/docker-build-current.sh --pull --push
+  dev-environment:
+    group: motes
+    label_template: "${github[:8]}"
+    locking: off
+    materials:
+      github:
+        git: https://github.com/cilliemalan/motes.git
+        branch: master
+      upstream:
+        pipeline: build
+        stage: final
+    stages:
+      - prepare-dev-environment:
+          jobs:
+            environment:
+              tasks:
+                - script: build-scripts/prepare-environment.sh dev
+      - deploy-dev-environment:
+          jobs:
+            create-cluster:
+              tasks:
+                - script: "echo 'create cluster'"

@@ -58,8 +58,6 @@ pipelines:
                 - script: "build-scripts/utilities/use-environment.sh dev && build-scripts/run-unit-tests.sh"
       - e2e-tests:
           jobs:
-            unit-tests:
-              tasks:
             e2e-tests:
               tasks:
                 - script: "build-scripts/utilities/use-environment.sh dev && build-scripts/run-e2e-tests.sh"

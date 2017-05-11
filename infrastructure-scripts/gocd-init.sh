@@ -209,6 +209,7 @@ then
     # add go user to docker group
     gpasswd -a go docker
     /etc/init.d/docker restart
+    /etc/init.d/go-agent restart
 else
     echo "Go CD already installed"
 fi

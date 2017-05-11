@@ -34,7 +34,8 @@ pipelines:
       - final:
           jobs:
             notify:
-              - script: "echo done"
+              tasks:
+                - script: "echo done"
   build:
     group: motes
     label_template: "${github[:8]}"

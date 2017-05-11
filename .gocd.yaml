@@ -31,20 +31,6 @@ pipelines:
             lint:
               tasks:
                 - script: build-scripts/lint.sh
-      - final:
-          jobs:
-            notify:
-              tasks:
-                - script: "echo done"
-  build:
-    group: motes
-    label_template: "${upstream}"
-    locking: off
-    materials:
-      upstream:
-        pipeline: prepare
-        stage: final
-    stages:
       - check:
           jobs:
             environment:
@@ -55,20 +41,6 @@ pipelines:
             environment:
               tasks:
                 - script: build-scripts/docker-build-current.sh --push
-      - final:
-          jobs:
-            notify:
-              tasks:
-                - script: "echo done"
-  dev-environment:
-    group: motes
-    label_template: "${upstream}"
-    locking: off
-    materials:
-      upstream:
-        pipeline: build
-        stage: final
-    stages:
       - prepare-dev-environment:
           jobs:
             environment:

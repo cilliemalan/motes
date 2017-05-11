@@ -63,8 +63,8 @@ RUN set -x \
 
 
 COPY haproxy.cfg.in /usr/local/etc/haproxy/haproxy.cfg.in
-COPY reconf.sh /usr/local/etc/haproxy/reconf
-RUN chmod +x /usr/local/etc/haproxy/reconf
+COPY reconf.sh /usr/local/etc/haproxy/reconf.sh
+RUN chmod +x /usr/local/etc/haproxy/reconf.sh
 
 
 COPY docker-entrypoint.sh /

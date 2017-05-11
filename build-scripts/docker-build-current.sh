@@ -10,6 +10,6 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$DIR"
 source "build-scripts/utilities/project-env.sh"
 
-build-scripts/utilities/docker-build-all.sh --autoversion
+build-scripts/utilities/docker-build-all.sh
 
 

@@ -22,14 +22,6 @@ FROMTAG="$HOST/$PROJECT/$REPO:$VER"
 docker build -t "local/unit-tests" --cache-from "local/unit-tests" - <<EOF
 FROM $FROMTAG
 
-# phantomjs
-RUN wget "https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2" \
-         -O "/tmp/phantomjs-2.1.1-linux-x86_64.tar.bz2" && \
-    tar -xvf "/tmp/phantomjs-2.1.1-linux-x86_64.tar.bz2" -C /usr/local && \
-    apt-get update && apt-get install fontconfig -y && \
-    ln -s /usr/local/phantomjs-2.1.1-linux-x86_64 /usr/local/phantomjs && \
-    ln -s /usr/local/phantomjs/bin/phantomjs /usr/bin/phantomjs
-
 # development env so it installs all packages
 ENV NODE_ENV development
 

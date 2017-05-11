@@ -39,7 +39,7 @@ buildcurrent() {
     else
         # build with cache
         echo "Building with cache"
-        docker build -t "$HASHTAG" -t "$TAG" --cache-from "$HASHTAG" .
+        docker build -t "$HASHTAG" -t "$TAG" --cache-from "$TAG" .
     fi
 
     if [[ $? == 0 ]]; then

@@ -52,7 +52,7 @@ pipelines:
           jobs:
             environment:
               tasks:
-                - script: build-scripts/docker-build-current.sh --pull --push
+                - script: build-scripts/docker-build-current.sh --push
   dev-environment:
     group: motes
     label_template: "${github[:8]}"

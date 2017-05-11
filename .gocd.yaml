@@ -41,6 +41,9 @@ pipelines:
     label_template: "${github[:8]}"
     locking: off
     materials:
+      github:
+        git: https://github.com/cilliemalan/motes.git
+        branch: master
       upstream:
         pipeline: prepare
         stage: final

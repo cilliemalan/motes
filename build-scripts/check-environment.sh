@@ -17,12 +17,18 @@ echo "Current environment:"
 printenv
 printf "\n\n"
 
+echo "Current user: $USERNAME"
+echo "Current groups: $(groups)"
+echo "More info user info: $(id)"
+
+
 STATUS=0
 
 if (sudo -v&>/dev/null); then red "Could sudo"; STATUS=1; else green "Could not sudo"; fi
 
 echo "Checking Docker:"
 if docker --version; then green "Docker good!"; else red "Docker fail"; STATUS=1; fi
+if docker ps; then green "Docker perms good!"; else red "Docker perms fail"; STATUS=1; fi
 
 echo "Checking Kubectl:"
 if [[ -n $"(which kubectl)" ]]; then green "Kubectl good!"; else red "Kubectl fail"; STATUS=1; fi

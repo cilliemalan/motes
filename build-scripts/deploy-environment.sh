@@ -33,8 +33,8 @@ then
 fi
 
 # get creds
-gcloud container clusters get-credentials "$CLUSTER_NAME" $ZONEPARM
+build-scripts/utilities/use-environment.sh $LABEL
 
 
 # deploy
-build-scripts/update-deployment.sh $1
+build-scripts/update-deployment.sh $LABEL

@@ -45,6 +45,11 @@ pipelines:
         pipeline: prepare
         stage: final
     stages:
+      - check:
+          jobs:
+            environment:
+              tasks:
+                - script: pwd && ls -la
       - build-containers:
           jobs:
             environment:

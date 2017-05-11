@@ -2,6 +2,14 @@
 // this is our api
 const express = require('express');
 const router = express.Router();
+
+const bluebird = require('bluebird');
+
+const redis = require("redis");
+const kafka = require('kafka-node');
+const MongoClient = require('mongodb').MongoClient;
+bluebird.promisifyAll(redis.RedisClient.prototype);
+
 const config = require('./package.json');
 const zk = require('./zookeeperProvider');
 module.exports = router;
@@ -29,6 +37,7 @@ router.postAsync('/zookeeper', async (req, res) => {
         const instances = await zk.getNumberOfActiveServersAsync();
         res.json({ success: true, instances });
     } catch (e) {
+        console.error(e);
         res.status(500).json({ success: false, error: e.toString() });
     }
 });
@@ -36,8 +45,21 @@ router.postAsync('/zookeeper', async (req, res) => {
 // test mongo url
 router.postAsync('/mongo', async (req, res) => {
     try {
+        const url = 'mongodb://mongo:27017/test';
+        await new Promise((resolve, reject) => {
+            MongoClient.connect(url, (e, db) => {
+                if (e) reject(e);
+                if (!db) reject('no db!');
+                db.close(e => {
+                    if (e) reject(e);
+                    else resolve();
+                });
+            });
+        });
+        
         res.json({ success: true });
     } catch (e) {
+        console.error(e);
         res.status(500).json({ success: false, error: e.toString() });
     }
 });
@@ -45,26 +67,16 @@ router.postAsync('/mongo', async (req, res) => {
 // test redis url
 router.postAsync('/redis', async (req, res) => {
     try {
-        res.json({ success: true });
+        const crypto = require("crypto");
+        let key = crypto.randomBytes(8).toString("hex");
+        let value = crypto.randomBytes(8).toString("hex");
+        let redisClient = redis.createClient({ host: 'redis' });
+        await redisClient.setAsync(key, value);
+        var gotten = await redisClient.getAsync(key);
+        redisClient.delAsync(key);
+        res.json({ success: value == gotten });
     } catch (e) {
-        res.status(500).json({ success: false, error: e.toString() });
-    }
-});
-
-// send kafka message url
-router.postAsync('/kafka', async (req, res) => {
-    try {
-        res.json({ success: true });
-    } catch (e) {
-        res.status(500).json({ success: false, error: e.toString() });
-    }
-});
-
-// get kafka messages url
-router.getAsync('/kafka', async (req, res) => {
-    try {
-        res.json({ success: true, message: ['hello world'] });
-    } catch (e) {
+        console.error(e);
         res.status(500).json({ success: false, error: e.toString() });
     }
 });
@@ -74,6 +86,7 @@ router.postAsync('/graphite', async (req, res) => {
     try {
         res.json({ success: true });
     } catch (e) {
+        console.error(e);
         res.status(500).json({ success: false, error: e.toString() });
     }
 });

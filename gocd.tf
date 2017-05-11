@@ -66,9 +66,7 @@ resource "google_compute_instance" "gocd" {
   }
 
   service_account {
-    scopes = ["useraccounts-ro", "storage-ro", "logging-write", "compute-rw",
-              "monitoring-write", "service-management", "service-control",
-              "https://www.googleapis.com/auth/ndev.clouddns.readwrite"]
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
 }
 

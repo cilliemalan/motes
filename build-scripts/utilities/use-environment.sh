@@ -22,4 +22,5 @@ if [[ -n "$ZONE" ]]; then
 fi
 
 # get creds
+CLUSTER_NAME="$LABEL-cluster"
 gcloud container clusters get-credentials "$CLUSTER_NAME" $ZONEPARM

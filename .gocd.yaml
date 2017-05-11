@@ -51,16 +51,56 @@ pipelines:
             create-cluster:
               tasks:
                 - script: "build-scripts/deploy-environment.sh dev"
-      - unit-tests:
+      - unit-tests-dev:
           jobs:
             unit-tests:
               tasks:
                 - script: "build-scripts/utilities/use-environment.sh dev && build-scripts/run-unit-tests.sh"
-      - e2e-tests:
+      - e2e-tests-dev:
           jobs:
             e2e-tests:
               tasks:
                 - script: "build-scripts/utilities/use-environment.sh dev && build-scripts/run-e2e-tests.sh"
+      - prepare-test-environment:
+          jobs:
+            environment:
+              tasks:
+                - script: "build-scripts/prepare-environment.sh test"
+      - deploy-test-environment:
+          jobs:
+            create-cluster:
+              tasks:
+                - script: "build-scripts/deploy-environment.sh test"
+      - unit-tests-test:
+          jobs:
+            unit-tests:
+              tasks:
+                - script: "build-scripts/utilities/use-environment.sh test && build-scripts/run-unit-tests.sh"
+      - e2e-tests-test:
+          jobs:
+            e2e-tests:
+              tasks:
+                - script: "build-scripts/utilities/use-environment.sh test && build-scripts/run-e2e-tests.sh"
+      - prepare-prod-environment:
+          jobs:
+            environment:
+              tasks:
+                - script: "build-scripts/prepare-environment.sh prod"
+      - deploy-prod-environment:
+          jobs:
+            create-cluster:
+              tasks:
+                - script: "build-scripts/deploy-environment.sh prod"
+      - unit-tests-prod:
+          jobs:
+            unit-tests:
+              tasks:
+                - script: "build-scripts/utilities/use-environment.sh prod && build-scripts/run-unit-tests.sh"
+      - e2e-test-prod:
+          jobs:
+            e2e-tests:
+              tasks:
+                - script: "build-scripts/utilities/use-environment.sh prod && build-scripts/run-e2e-tests.sh"
       - final:
           jobs:
             notify:

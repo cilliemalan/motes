@@ -9,19 +9,20 @@ if [[ -z "$LABEL" ]]; then
     exit 1;
 fi
 
-ZONE=$(curl -s "http://metadata.google.internal/computeMetadata/v1/instance/zone" -H "Metadata-Flavor: Google" | egrep -o 'zones.*' | sed 's/zones\///')
-
-if [[ -n "$ZONE" ]]; then
-    ZONEPARM="--zone '$ZONE'"
-fi
-
 # run inside proj dir and use project env
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$DIR"
 source "build-scripts/utilities/project-env.sh"
 
+
+if [[ -n "$ZONE" ]]; then
+    ZONEPARM="--zone '$ZONE'"
+fi
+
+
 NODES=0
 NODE_TYPE="n1-standard-1"
+CLUSTER_NAME="$LABEL-cluster"
 if [[ "$LABEL" == "dev" ]]; then
     NODES=3
     NODE_TYPE="n1-standard-1"
@@ -41,7 +42,7 @@ if [[ -z "$(gcloud container clusters list --project "$PROJECT_ID" $ZONEPARM | g
 then
     echo "Creating $LABEL-cluster in ${ZONE:-the default zone}"
 
-    gcloud container --project "$PROJECT_ID" clusters create "dev-cluster" $ZONEPARM \
+    gcloud container --project "$PROJECT_ID" clusters create "$CLUSTER_NAME" $ZONEPARM \
         --machine-type "n1-standard-1" --image-type "COS" --disk-size "100" \
         --scopes "https://www.googleapis.com/auth/compute","https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/service.management.readonly","https://www.googleapis.com/auth/trace.append" \
         --num-nodes "3" --network "default" --enable-cloud-logging --no-enable-cloud-monitoring

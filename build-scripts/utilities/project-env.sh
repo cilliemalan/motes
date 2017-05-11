@@ -14,6 +14,9 @@ export PROJECT_REGION=$(get_parm project_region)
 export DNS_NAME=$(get_parm domain)
 export CURRENT_VERSION=$(git rev-parse --verify --short HEAD)
 
+# only works on server in gcp
+export ZONE=$(curl -s "http://metadata.google.internal/computeMetadata/v1/instance/zone" -H "Metadata-Flavor: Google" | egrep -o 'zones.*' | sed 's/zones\///')
+
 imagetag() {
     local ver=${2:-latest}
     local host=eu.gcr.io

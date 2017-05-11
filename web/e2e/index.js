@@ -17,7 +17,7 @@ describe('The site', () => {
 
         // check the title
         let pageTitle = await ghost.pageTitle();
-        assert.equal(pageTitle, 'Continuous Deliver Example');
+        assert.equal(pageTitle, 'Continuous Delivery Example');
 
         // check that there is a header
         let h1 = await ghost.findElement("h1");
@@ -26,6 +26,6 @@ describe('The site', () => {
         // check the header text
         let headerText = await h1.text();
         assert.isOk(headerText);
-        assert.equal(headerText, "Continuous Deliver Example");
+        assert.equal(headerText, "Continuous Delivery Example");
     });
 });

@@ -20,7 +20,8 @@ printf "\n\n"
 echo "Current user: $USERNAME"
 echo "Current groups: $(groups)"
 echo "More info user info: $(id)"
-
+echo "Ip Address: $(curl -s 'https://api.ipify.org')"
+echo "Home dirs: $(ls /home)"
 
 STATUS=0
 

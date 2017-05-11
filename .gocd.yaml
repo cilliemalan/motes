@@ -38,12 +38,9 @@ pipelines:
                 - script: "echo done"
   build:
     group: motes
-    label_template: "${github[:8]}"
+    label_template: "${upstream}"
     locking: off
     materials:
-      github:
-        git: https://github.com/cilliemalan/motes.git
-        branch: master
       upstream:
         pipeline: prepare
         stage: final
@@ -60,12 +57,9 @@ pipelines:
                 - script: "echo done"
   dev-environment:
     group: motes
-    label_template: "${github[:8]}"
+    label_template: "${upstream}"
     locking: off
     materials:
-      github:
-        git: https://github.com/cilliemalan/motes.git
-        branch: master
       upstream:
         pipeline: build
         stage: final
@@ -80,6 +74,14 @@ pipelines:
             create-cluster:
               tasks:
                 - script: "build-scripts/deploy-environment.sh dev"
+      - tests:
+          jobs:
+            unit-tests:
+              tasks:
+                - script: "build-scripts/utilities/use-environment.sh dev && build-scripts/run-unit-tests.sh"
+            e2e-tests:
+              tasks:
+                - script: "build-scripts/utilities/use-environment.sh dev && build-scripts/run-e2e-tests.sh"
       - final:
           jobs:
             notify:

@@ -16,6 +16,7 @@ source "build-scripts/utilities/project-env.sh"
 docker ps >/dev/null 2>&1
 if [[ $? != 0 ]]; then
     echo "Docker failed. Please check docker environment"
+    docker ps
     exit 1;
 fi
 

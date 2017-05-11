@@ -34,9 +34,11 @@ buildcurrent() {
 
     if [[ " $* " =~ " --pull " ]]; then
         # build from scratch
+        echo "Building from scratch"
         docker build -t "$HASHTAG" -t "$TAG" --pull .
     else
         # build with cache
+        echo "Building with cache"
         docker build -t "$HASHTAG" -t "$TAG" --cache-from "$HASHTAG" .
     fi
 

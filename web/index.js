@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const api = require('./api');
+const gf = require('./graphiteProvider');
 const zk = require('./zookeeperProvider');
 
 console.log('starting...');
@@ -17,6 +18,9 @@ console.log(`running in ${process.cwd()}`);
 
 // the express app
 const app = express();
+
+// logging
+app.use(gf.trackExpress);
 
 // static files
 console.log(`static files in ${wwwroot}`);
@@ -38,3 +42,7 @@ app.listen(port, async () => {
     console.log(`There are currently ${await zk.getNumberOfActiveServersAsync()} registered servers`);
 });
 
+//provide some data for whomever might need
+module.exports = {
+    url: `http://localhost:${port}/`
+};

@@ -27,6 +27,8 @@ Options:
     -s, --scale SCALE       Override scale factor (by default dev=1, test=3, and prod=5).
                             This controls how many initial instances of services such
                             as kafka, zookeeper, and web are created
+    -v, --version VERSION   the version tag to use for deployment-based containers. by
+                            default will use 'latest'.
     -n, --namespace NAMESPACE set the kubernetes namespace to use. If omitted will use
                             the current namespace.
         --delete            delete all deployments instead of create
@@ -39,8 +41,8 @@ red() { echo -e "\033[0;31m$@\033[0m"; }
 green() { echo -e "\033[0;32m$@\033[0m"; }
 
 # parse args
-SHORT_OPTIONS=e:p:s:n:
-LONG_OPTIONS=env:,project:,scale:,namespace:,delete,dry-run
+SHORT_OPTIONS=e:p:s:n:v:
+LONG_OPTIONS=env:,project:,scale:,namespace:,delete,dry-run,version:
 
 PARSED=$(getopt --options $SHORT_OPTIONS --longoptions $LONG_OPTIONS --name "$0" -- "$@")
 if [[ $? -ne 0 ]]; then
@@ -54,6 +56,7 @@ eval set -- "$PARSED"
 
 export ENVIRONMENT=dev
 export SCALE=0
+export CONTAINER_VERSION=latest
 DELETE_DEPLOYMENTS=0
 DRY_RUN=0
 # PROJECT_ID from project-env
@@ -74,6 +77,10 @@ while true; do
             ;;
         -n|--namespace)
             NAMESPACE="$2"
+            shift 2
+            ;;
+        -v|--version)
+            CONTAINER_VERSION="$2"
             shift 2
             ;;
         --delete)
@@ -105,19 +112,15 @@ fi
 # some per-env things
 DEFAULTSCALE=0
 export DATADISKSIZE=1Gi
-export CONTAINER_VERSION=latest
 case "$ENVIRONMENT" in
     dev)
         DEFAULTSCALE=1
-        CONTAINER_VERSION=latest
         ;;
     test)
         DEFAULTSCALE=3
-        CONTAINER_VERSION=test
         ;;
     prod)
         DEFAULTSCALE=5
-        CONTAINER_VERSION=prod
         DATADISKSIZE=20Gi
         ;;
     *)

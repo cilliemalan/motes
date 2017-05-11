@@ -31,3 +31,21 @@ pipelines:
             lint:
               tasks:
                 - script: build-scripts/lint.sh
+      - final:
+          jobs:
+            notify:
+              - script: "echo done"
+  build:
+    group: motes
+    label_template: "${github[:8]}"
+    locking: off
+    materials:
+      upstream:
+        pipeline: prepare
+        stage: final
+    stages:
+      - build-containers:
+          jobs:
+            environment:
+              tasks:
+                - script: build-scripts/docker-build-current.sh --pull --push

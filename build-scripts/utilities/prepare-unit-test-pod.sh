@@ -71,7 +71,6 @@ done
 
 if [[ $RUNNING == 0 ]]; then
     echo "Could not get pod running"
-    kubectl delete po/unit-tests
     exit 3;
 fi
 

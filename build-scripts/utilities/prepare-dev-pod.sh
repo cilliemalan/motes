@@ -13,14 +13,10 @@ source "build-scripts/utilities/project-env.sh"
 red() { >&2 echo -e "\033[0;31m$@\033[0m"; }
 green() { echo -e "\033[0;32m$@\033[0m"; }
 
-# build a container just for us!
-VER=latest
-HOST=eu.gcr.io
-PROJECT="$PROJECT_ID"
-REPO=motes-web
-FROMTAG="$HOST/$PROJECT/$REPO:$VER"
-docker build -t "local/unit-tests" --cache-from "local/unit-tests" - <<EOF
-FROM $FROMTAG
+# build a container just for us! It's based on the web image
+TAG=$(imagetag web)
+docker build -t "local/web-dev" --cache-from "local/web-dev" - <<EOF
+FROM $TAG
 
 # development env so it installs all packages
 ENV NODE_ENV development
@@ -29,11 +25,13 @@ ENV NODE_ENV development
 RUN npm install
 
 
+# container does nothing when running
+CMD ["sleep","10000000"]
 
 EOF
 
 if [[ $? != 0 ]]; then
-    echo "Failed to build test image"
+    echo "Failed to build dev image"
     exit 4
 fi
 
@@ -42,31 +40,27 @@ cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Pod
 metadata:
-  name: unit-tests
+  name: web-dev
   labels:
-    app: unit-tests
+    app: web-dev
 spec:
   containers:
-  - name: unit-tests
-    image: local/unit-tests
+  - name: web-dev
+    image: local/web-dev
     imagePullPolicy: IfNotPresent
-    command: ["sleep"]
-    args: ["10000000"]
-    env:
-    - name: NODE_ENV
-      value: development
 EOF
 
 
 
 RUNNING=0
-for i in 1 2 3 4 5; 
+for i in 1 2 3 4 5 6 7 8 9 10; 
 do
-    RUNNINGOUTPUT=$(kubectl get pods -l "app==unit-tests" --output=yaml | grep 'phase: Running')
+    RUNNINGOUTPUT=$(kubectl get pods -l "app==web-dev" --output=yaml | grep 'phase: Running')
     if [[ -n $RUNNINGOUTPUT ]]; then
         RUNNING=1
         break
     fi
+    sleep 1000
 done
 
 if [[ $RUNNING == 0 ]]; then
@@ -80,6 +74,6 @@ pushd web
 tar -X .gitignore -cpzf - . | kubectl exec -i unit-tests -- tar -xpzf - .;
 popd
 
-# run npm install again
+# run npm install on pod
 echo "Running npm install"
 kubectl exec unit-tests -t -- npm install

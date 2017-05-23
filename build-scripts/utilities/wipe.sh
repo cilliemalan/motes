@@ -16,17 +16,16 @@ getresource() {
 
 
 
-read -p "Are you sure? [y/N]" -n 1 -r
-echo    # (optional) move to a new line
+read -p "Are you sure? [y/N]"
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-    echo "Deleting  (1/4)"
+    echo "Deleting services (1/4)"
     kubectl delete $(getresource svc)
-    echo "Deleting  (2/4)"
+    echo "Deleting statfulsets (2/4)"
     kubectl delete $(getresource statefulsets)
-    echo "Deleting  (3/4)"
+    echo "Deleting deployments (3/4)"
     kubectl delete $(getresource deploy)
-    echo "Deleting  (4/4)"
+    echo "Deleting pods (4/4)"
     kubectl delete $(getresource po)
 fi
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# this script prepares an environment passed as the first parameter
+# this script prepares a cluster passed as the first parameter
 # possible options include: local, dev, test, prod
 LABEL=$1
 
@@ -24,14 +24,14 @@ NODES=0
 NODE_TYPE="n1-standard-1"
 CLUSTER_NAME="$LABEL-cluster"
 if [[ "$LABEL" == "dev" ]]; then
-    NODES=5
-    NODE_TYPE="n1-standard-2"
+    NODES=1
+    NODE_TYPE="n1-standard-1"
 elif [[ "$LABEL" == "test" ]]; then
-    NODES=5
+    NODES=1
     NODE_TYPE="n1-standard-2"
 elif [[ "$LABEL" == "prod" ]]; then
-    NODES=10
-    NODE_TYPE="n1-standard-4"
+    NODES=3
+    NODE_TYPE="n1-standard-2"
 else
     echo "Unknown environment name $LABEL. must be dev, test, or prod."
     exit 2;

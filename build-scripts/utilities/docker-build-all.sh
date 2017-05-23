@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # this script builds all docker images. Loops through subdirs of project folder
-# and builds every dockerfile
+# and builds every dockerfile. Will tag each image with current commit hash as version
+# as well as latest
 # options:
 #   --pull    pulls all dep repos afresh
 #   --push    pushes to gcp repo
@@ -45,6 +46,7 @@ buildcurrent() {
     if [[ $? == 0 ]]; then
         if [[ " $* " =~ " --push " ]]; then
             gcloud docker -- push "$HASHTAG"
+            gcloud container images add-tag "$TAG"
         fi
     fi
 }

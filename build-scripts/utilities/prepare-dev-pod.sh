@@ -21,11 +21,13 @@ FROM $TAG
 # development env so it installs all packages
 ENV NODE_ENV development
 
-# remove all the stuff and prepare for mounted dir
-RUN rm -rf /usr/src/app && mkdir /usr/src/app
+RUN apt-get update && apt-get install -y inotify-tools rsync && rm -rf /etc/app/lists
 
-# container does nothing when running
-CMD ["sleep","10000000"]
+# remove the existing app
+RUN rm -rf /usr/src/app && mkdir /usr/src/app && rm -rf /var/lib/apt/lists/*
+
+# container continually syncs while running
+CMD ["bash", "-c", "while true; do rsync -avz --exclude 'node_modules' /usr/src/app-host/ /usr/src/app; sleep 5; done"]
 
 EOF
 
@@ -68,7 +70,7 @@ spec:
     image: local/web-dev
     imagePullPolicy: IfNotPresent
     volumeMounts:
-    - mountPath: /usr/src/app
+    - mountPath: /usr/src/app-host
       name: host-mount
   volumes:
   - name: host-mount
@@ -87,7 +89,7 @@ do
         RUNNING=1
         break
     fi
-    sleep 1000
+    sleep 1
 done
 
 if [[ $RUNNING == 0 ]]; then
@@ -103,4 +105,4 @@ fi
 
 # run npm install on pod
 echo "Running npm install"
-kubectl exec unit-tests -t -- npm install
+kubectl exec web-dev -t -- npm install

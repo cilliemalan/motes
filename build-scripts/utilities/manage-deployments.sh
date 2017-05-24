@@ -49,12 +49,12 @@ green() { echo -e "\033[0;32m$@\033[0m"; }
 SELECTED_SET=$1
 shift
 
-if [[ -z "$1" ]]; then
+if [[ -z "$SELECTED_SET" ]]; then
     echo "Please specify a set"
     exit 1;
 fi
 
-if [[ ! -f $DIR/deployments/$SELECTED_SET ]]; then
+if [[ ! -e $DIR/deployments/$SELECTED_SET ]]; then
     echo "Please specify one of ($(cd $DIR/deployments && echo */ | sed 's/\///g')) as a set"
     exit 9;
 fi
@@ -223,3 +223,8 @@ else
     green "All succeeded"
     exit 0
 fi
+
+
+
+
+

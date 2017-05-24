@@ -16,6 +16,7 @@ LABEL=$1
 
 # check that the specified cluster exists
 if [[ -n "$LABEL" ]]; then
+    echo "Deploying ecosystem to $LABEL"
 
     if [[ -n "$ZONE" ]]; then
         ZONEPARM="--zone $ZONE"
@@ -32,6 +33,7 @@ if [[ -n "$LABEL" ]]; then
     fi
 
 else
+    echo "Deploying ecosystem to local"
 fi
 
 # get creds and configure kubectl
@@ -39,4 +41,4 @@ build-scripts/utilities/use-cluster.sh $LABEL
 
 
 # deploy to the cluster
-build-scripts/utilities/manage-deployments.sh -v "latest"
+build-scripts/utilities/manage-deployments.sh ecosystem

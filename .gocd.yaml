@@ -17,7 +17,7 @@ pipelines:
           jobs:
             environment:
               tasks:
-                - script: build-scripts/check-environment.sh
+                - script: build-scripts/check-agent.sh
       - prerequisites:
           jobs:
             npm:

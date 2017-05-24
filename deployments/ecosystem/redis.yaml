@@ -5,6 +5,7 @@ metadata:
   name: redis
   labels:
     app: redis
+    set: ecosystem
 spec:
   ports:
   - port: 6379
@@ -22,6 +23,7 @@ spec:
     metadata:
       labels:
         app: redis
+        set: ecosystem
     spec:
       containers:
       - name: redis

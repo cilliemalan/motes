@@ -5,6 +5,7 @@ metadata:
   name: web-proxy
   labels:
     app: web-proxy
+    set: ecosystem
 spec:
   ports:
     - name: http
@@ -23,6 +24,7 @@ spec:
     metadata:
       labels:
         app: web-proxy
+        set: ecosystem
     spec:
       containers:
         - name: web-proxy

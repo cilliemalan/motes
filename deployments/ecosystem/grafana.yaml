@@ -4,6 +4,7 @@ metadata:
   name: grafana
   labels:
     app: grafana
+    set: ecosystem
 spec:
   ports:
     - name: http
@@ -23,6 +24,7 @@ spec:
     metadata:
       labels:
         app: grafana
+        set: ecosystem
       annotations:
         pod.alpha.kubernetes.io/initialized: "true"
     spec:

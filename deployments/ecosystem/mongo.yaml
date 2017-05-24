@@ -5,6 +5,7 @@ metadata:
   name: mongo
   labels:
     app: mongo
+    set: ecosystem
 spec:
   ports:
   - port: 27017
@@ -24,6 +25,7 @@ spec:
     metadata:
       labels:
         app: mongo
+        set: ecosystem
       annotations:
         pod.alpha.kubernetes.io/initialized: "true"
     spec:

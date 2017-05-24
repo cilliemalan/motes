@@ -5,6 +5,7 @@ metadata:
   name: zookeeper
   labels:
     app: zookeeper
+    set: ecosystem
 spec:
   ports:
   - port: 2888
@@ -26,6 +27,7 @@ spec:
     metadata:
       labels:
         app: zookeeper
+        set: ecosystem
       annotations:
         pod.alpha.kubernetes.io/initialized: "true"
     spec:

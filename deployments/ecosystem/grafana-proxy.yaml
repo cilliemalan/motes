@@ -5,6 +5,7 @@ metadata:
   name: grafana-proxy
   labels:
     app: grafana-proxy
+    set: ecosystem
 spec:
   ports:
     - name: http
@@ -23,6 +24,7 @@ spec:
     metadata:
       labels:
         app: grafana-proxy
+        set: ecosystem
     spec:
       containers:
         - name: grafana-proxy

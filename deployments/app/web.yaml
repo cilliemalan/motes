@@ -5,6 +5,7 @@ metadata:
   name: web
   labels:
     app: web
+    set: app
 spec:
   ports:
     - name: http
@@ -23,6 +24,7 @@ spec:
     metadata:
       labels:
         app: web
+        set: app
     spec:
       containers:
         - name: web
@@ -38,6 +40,7 @@ metadata:
   name: web-canary
   labels:
     app: web-canary
+    set: app
 spec:
   ports:
     - name: http
@@ -56,6 +59,7 @@ spec:
     metadata:
       labels:
         app: web-canary
+        set: app
     spec:
       containers:
         - name: web-canary

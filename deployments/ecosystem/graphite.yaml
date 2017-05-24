@@ -4,6 +4,7 @@ metadata:
   name: graphite
   labels:
     app: graphite
+    set: ecosystem
 spec:
   ports:
     - name: http
@@ -36,6 +37,7 @@ spec:
     metadata:
       labels:
         app: graphite
+        set: ecosystem
       annotations:
         pod.alpha.kubernetes.io/initialized: "true"
     spec:

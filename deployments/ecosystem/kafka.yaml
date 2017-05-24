@@ -5,6 +5,7 @@ metadata:
   name: kafka
   labels:
     app: kafka
+    set: ecosystem
 spec:
   ports:
   - port: 9092
@@ -24,6 +25,7 @@ spec:
     metadata:
       labels:
         app: kafka
+        set: ecosystem
       annotations:
         pod.alpha.kubernetes.io/initialized: "true"
     spec:

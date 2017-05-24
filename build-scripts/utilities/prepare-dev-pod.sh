@@ -21,9 +21,8 @@ FROM $TAG
 # development env so it installs all packages
 ENV NODE_ENV development
 
-# npm install for caching. Will be run again
-RUN npm install
-
+# remove all the stuff and prepare for mounted dir
+RUN rm -rf /usr/src/app && mkdir /usr/src/app
 
 # container does nothing when running
 CMD ["sleep","10000000"]
@@ -35,7 +34,27 @@ if [[ $? != 0 ]]; then
     exit 4
 fi
 
-# run a pod for them tests
+# Make sure minikube has the needed mount
+# NOTE: THIS IS NOT WORKING DUE TO BUG IN MINIKUBE
+# minikube mount "$DIR:/motes"
+echo "Checking if minikube mount exists..."
+MOUNT_EXISTS=$(minikube ssh -- "if [[ -e /motes ]]; then echo exists; fi")
+if [[ $MOUNT_EXISTS != "exists" ]]; then
+    red "The mount /motes inside the minikube vm does not exist"
+    red "Due to a bug in minikube we can't do this for you"
+    echo"You need to mount the folder within minikube called /motes to $(pwd)"
+    echo "This is typically done with the command:"
+    echo
+    echo "  minikube mount '$DIR:/motes'"
+    echo
+    echo "But this will probably not work. As a workaround use your VM driver"
+    echo "(probably virtualbox) and create the mount manually."
+    # exit 4
+else
+    echo "mount exists!"
+fi
+
+# run a pod for dev stuff
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Pod
@@ -48,6 +67,14 @@ spec:
   - name: web-dev
     image: local/web-dev
     imagePullPolicy: IfNotPresent
+    volumeMounts:
+    - mountPath: /usr/src/app
+      name: host-mount
+  volumes:
+  - name: host-mount
+    hostPath:
+      # directory location on host
+      path: /motes/web
 EOF
 
 
@@ -69,10 +96,10 @@ if [[ $RUNNING == 0 ]]; then
 fi
 
 # copy files in
-echo "Copying in files..."
-pushd web
-tar -X .gitignore -cpzf - . | kubectl exec -i unit-tests -- tar -xpzf - .;
-popd
+# echo "Copying in files..."
+# pushd web
+# tar -X .gitignore -cpzf - . | kubectl exec -i unit-tests -- tar -xpzf - .;
+# popd
 
 # run npm install on pod
 echo "Running npm install"

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --grep \"^(?!Ecosystem|Integration).+\"",
-    "test-all": "mocha",
+    "test-all": "nyc --reporter=html --reporter=text  mocha",
     "test-e2e": "ghostjs e2e/*.js",
     "start": "node ."
   },
@@ -48,6 +48,8 @@
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
     "opn": "^5.0.0",
-    "ghostjs": "^1.9.0"
+    "ghostjs": "^1.9.0",
+    "nyc": "^10.3.2",
+    "istanbul": "^0.4.5"
   }
 }

@@ -10,17 +10,28 @@ source "build-scripts/utilities/project-env.sh"
 
 
 
-LABEL=$1
+LABEL=${1:-local}
 
-if [[ -z "$LABEL" ]]; then
-    echo "Must specify environment name (dev, test, or prod)"
-    exit 1;
+if [[ "$LABEL" == "local" ]]; then
+    # use minikube
+    kubectl config set-context minikube
+
+    if [[ $? != 0 ]]; then
+        echo "Failed to switch to minikube";
+        exit 1;
+    fi
+else
+
+    if [[ -n "$ZONE" ]]; then
+        ZONEPARM="--zone $ZONE"
+    fi
+
+    # get creds
+    CLUSTER_NAME="$LABEL-cluster"
+    gcloud container clusters get-credentials "$CLUSTER_NAME" $ZONEPARM
+    
+    if [[ $? != 0 ]]; then
+        echo "Failed to switch to $LABEL cluster";
+        exit 1;
+    fi
 fi
-
-if [[ -n "$ZONE" ]]; then
-    ZONEPARM="--zone $ZONE"
-fi
-
-# get creds
-CLUSTER_NAME="$LABEL-cluster"
-gcloud container clusters get-credentials "$CLUSTER_NAME" $ZONEPARM

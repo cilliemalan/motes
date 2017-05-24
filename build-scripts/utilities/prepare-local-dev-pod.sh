@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# this script runs makes sure the unit test pod is running, kills any existing
-# nodejs instances, and runs npm install in dev env
+# this script makes sure the local dev pod is running, kills any existing
+# nodejs instances, and runs npm install in dev env. This is for a local minikube cluster.
 
 
 # run inside proj dir and use project env
@@ -15,7 +15,7 @@ green() { echo -e "\033[0;32m$@\033[0m"; }
 
 # build a container just for us! It's based on the web image
 TAG=$(imagetag web)
-docker build -t "local/web-dev" --cache-from "local/web-dev" - <<EOF
+docker build -t "local/local-dev" --cache-from "local/local-dev" - <<EOF
 FROM $TAG
 
 # development env so it installs all packages
@@ -61,13 +61,13 @@ cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Pod
 metadata:
-  name: web-dev
+  name: local-dev
   labels:
-    app: web-dev
+    app: local-dev
 spec:
   containers:
-  - name: web-dev
-    image: local/web-dev
+  - name: local-dev
+    image: local/local-dev
     imagePullPolicy: IfNotPresent
     volumeMounts:
     - mountPath: /usr/src/app-host
@@ -84,7 +84,7 @@ EOF
 RUNNING=0
 for i in 1 2 3 4 5 6 7 8 9 10; 
 do
-    RUNNINGOUTPUT=$(kubectl get pods -l "app==web-dev" --output=yaml | grep 'phase: Running')
+    RUNNINGOUTPUT=$(kubectl get pods -l "app==local-dev" --output=yaml | grep 'phase: Running')
     if [[ -n $RUNNINGOUTPUT ]]; then
         RUNNING=1
         break
@@ -97,12 +97,6 @@ if [[ $RUNNING == 0 ]]; then
     exit 3;
 fi
 
-# copy files in
-# echo "Copying in files..."
-# pushd web
-# tar -X .gitignore -cpzf - . | kubectl exec -i unit-tests -- tar -xpzf - .;
-# popd
-
 # run npm install on pod
 echo "Running npm install"
-kubectl exec web-dev -t -- npm install
+kubectl exec local-dev -t -- npm install

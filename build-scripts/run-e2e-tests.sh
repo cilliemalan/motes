@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# this script runs all unit tests inside the current kubernetes environment.
+# this script runs e2e tests inside the current kubernetes environment.
 # assumes the deployment is up to date and kubectl is configured properly.
 
 
@@ -13,12 +13,22 @@ source "build-scripts/utilities/project-env.sh"
 red() { >&2 echo -e "\033[0;31m$@\033[0m"; }
 green() { echo -e "\033[0;32m$@\033[0m"; }
 
-#prepare unit test pod
-build-scripts/utilities/prepare-dev-pod.sh
+SCRIPTENV=local;
+if [[ "$1" == "local" ]]; then
+    echo "Using local environment"
+elif [[ "$1" ~= dev|test|prod ]]; then
+    echo "Using $1 environment"
+    SCRIPTENV=remote
+else
+    echo "No environment specified, assuming local"
+fi
+
+# prepare dev pod
+./build-scripts/utilities/prepare-$SCRIPTENV-dev-pod.sh
 
 
 # run tests
-kubectl exec unit-tests -ti -- npm run test-e2e
+kubectl exec $SCRIPTENV-dev -ti -- npm run test-e2e
 RESULT=$?
 
 # check output

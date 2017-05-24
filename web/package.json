@@ -4,7 +4,7 @@
   "description": "Dust motes - web server",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --grep \"^(?!Ecosystem).+\"",
+    "test": "mocha --grep \"^(?!Ecosystem|Integration).+\"",
     "test-all": "mocha",
     "test-e2e": "ghostjs e2e/*.js",
     "start": "node ."

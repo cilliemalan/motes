@@ -15,13 +15,17 @@ Utility to manage kubernetes deployments.
 
 Note: kuberentes environment must be set up prior to using this utility.
 
-Usage: ./create.sh [options]
+Usage: ./create.sh set [options]
 
     deployment is one of the .yaml files without the ".yaml". e.g. ./create.sh web
 
+Parameters:
+    set                     The deployment set to process. This can be one of:
+                            echo $(cd $DIR/deployments && echo */ | sed 's/\///g')
+
 Options:
-    -e, --env ENVIRONMENT   Use the specified environment (defaults to dev. valid
-                            values are: dev, test, prod).
+    -e, --env ENVIRONMENT   Use the specified environment (defaults to local. valid
+                            values are: local, dev, test, prod).
     -p, --project PROJECT   Override the project ID to get images from. By default will
                             get from ./project-env.sh
     -s, --scale SCALE       Override scale factor (by default dev=1, test=3, and prod=5).
@@ -40,6 +44,21 @@ USAGE
 red() { echo -e "\033[0;31m$@\033[0m"; }
 green() { echo -e "\033[0;32m$@\033[0m"; }
 
+
+# get the specified set
+SELECTED_SET=$1
+shift
+
+if [[ -z "$1" ]]; then
+    echo "Please specify a set"
+    exit 1;
+fi
+
+if [[ ! -f $DIR/deployments/$SELECTED_SET ]]; then
+    echo "Please specify one of ($(cd $DIR/deployments && echo */ | sed 's/\///g')) as a set"
+    exit 9;
+fi
+
 # parse args
 SHORT_OPTIONS=e:p:s:n:v:
 LONG_OPTIONS=env:,project:,scale:,namespace:,delete,dry-run,version:
@@ -54,7 +73,7 @@ fi
 eval set -- "$PARSED"
 
 
-export ENVIRONMENT=dev
+export ENVIRONMENT=local
 export SCALE=0
 export CONTAINER_VERSION=latest
 DELETE_DEPLOYMENTS=0
@@ -113,6 +132,9 @@ fi
 DEFAULTSCALE=0
 export DATADISKSIZE=1Gi
 case "$ENVIRONMENT" in
+    local)
+        DEFAULTSCALE=3
+        ;;
     dev)
         DEFAULTSCALE=1
         ;;
@@ -147,6 +169,7 @@ if [[ -z "$KUBE_CONTEXT" || $? != 0 ]]; then
 fi
 
 echo "Using:"
+echo "  Selected set:      $SELECTED_SET"
 echo "  Kubernetes ctx:    $KUBE_CONTEXT"
 echo "  Project:           $PROJECT_ID"
 echo "  Scale:             $SCALE"
@@ -182,7 +205,7 @@ createdeployment() {
 
 # create each yaml file in deployments dir
 FAILED=0
-for deploymentfile in deployments/*.yaml;
+for deploymentfile in deployments/$SELECTED_SET/*.yaml;
 do
     createdeployment "$deploymentfile"
     if [[ $? != 0 ]]; then

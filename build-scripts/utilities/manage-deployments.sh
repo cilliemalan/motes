@@ -30,7 +30,7 @@ Options:
                             get from ./project-env.sh
     -s, --scale SCALE       Override scale factor (by default dev=1, test=3, and prod=5).
                             This controls how many initial instances of services such
-                            as kafka, zookeeper, and web are created
+                            as zookeeper and web are created
     -v, --version VERSION   the version tag to use for deployment-based containers. by
                             default will use 'latest'.
     -n, --namespace NAMESPACE set the kubernetes namespace to use. If omitted will use

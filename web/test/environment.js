@@ -3,7 +3,6 @@ const assert = require('chai').assert;
 
 const redis = require("redis");
 const zookeeper = require('node-zookeeper-client');
-const kafka = require('kafka-node');
 const MongoClient = require('mongodb').MongoClient;
 
 
@@ -13,14 +12,10 @@ describe("Ecosystem", function () {
 
     let redisClient;
     let zookeeperClient;
-    let kafkaProducer;
-    let kafkaConsumer;
 
     before(function () {
         redisClient = redis.createClient({ host: 'redis' });
         zookeeperClient = zookeeper.createClient('zookeeper:2181');
-        kafkaProducer = new kafka.Producer(new kafka.Client('zookeeper:2181', 'test-producer'));
-        kafkaConsumer = new kafka.Consumer(new kafka.Client('zookeeper:2181', 'test-consumer'), [{ topic: 'test-topic' }]);
 
         bluebird.promisifyAll(zookeeperClient);
 
@@ -29,9 +24,7 @@ describe("Ecosystem", function () {
 
     after(function () {
         zookeeperClient.close();
-        kafkaProducer.close();
-        kafkaConsumer.close();
-
+        
         console.log('after');
     });
 
@@ -59,25 +52,6 @@ describe("Ecosystem", function () {
                 });
             });
             zookeeperClient.connect();
-        });
-    });
-
-    describe("Kafka", function () {
-        it("should be accessible", function (done) {
-
-            this.timeout(5000);
-
-            function run() {
-                kafkaProducer.createTopics(['test-topic'], (e) => {
-                    assert.isNotOk(e);
-
-                    done();
-
-                });
-            }
-
-            if (kafkaProducer.ready) run();
-            else kafkaProducer.on('ready', run);
         });
     });
 

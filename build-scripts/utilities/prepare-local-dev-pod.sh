@@ -70,13 +70,25 @@ spec:
     image: local/local-dev
     imagePullPolicy: IfNotPresent
     volumeMounts:
-    - mountPath: /usr/src/app-host
-      name: host-mount
+      - mountPath: /usr/src/app-host
+        name: host-mount
+    ports:
+      - name: debug
+        containerPort: 5858
+      - name: http
+        containerPort: 3000
+    env:
+      - name: NODE_ENV
+        value: development
+      - name: PORT
+        value: "3000"
+      - name: DEBUG_PORT
+        value: "5858"
   volumes:
-  - name: host-mount
-    hostPath:
-      # directory location on host
-      path: /motes/web
+    - name: host-mount
+      hostPath:
+        # directory location on host
+        path: /motes/web
 EOF
 
 

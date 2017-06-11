@@ -11,13 +11,14 @@ source "build-scripts/utilities/project-env.sh"
 # spits out usage
 printusage() {
     cat <<USAGE
-Utility to manage kubernetes deployments.
+Utility to manage kubernetes deployments. Kuberentes environment must be set up prior to
+using this utility.
 
-Note: kuberentes environment must be set up prior to using this utility.
+Usage: ./manage-deployments.sh set [options]
 
-Usage: ./create.sh set [options]
-
-    deployment is one of the .yaml files without the ".yaml". e.g. ./create.sh web
+    deployment is one of the .yaml files without the ".yaml". e.g.
+    
+       ./manage-deployments.sh ecosystem
 
 Parameters:
     set                     The deployment set to process. This can be one of:
@@ -198,7 +199,7 @@ createdeployment() {
     fi
 
     # sub environment into the deployment file and pass to kubectl
-    envsubst < "$DIR/$deploymentfile" |\
+    build-scripts/utilities/envsubst-adv.sh < "$DIR/$deploymentfile" |\
         kubectl $command $namespacearg $args -f -
 }
 

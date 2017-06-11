@@ -22,7 +22,7 @@ pipelines:
           jobs:
             npm:
               tasks:
-                - script: build-scripts/prerequisites.sh
+                - script: build-scripts/local-prepare.sh
             dev-cluster:
               tasks:
                 - script: "echo Create dev cluster if needed..."

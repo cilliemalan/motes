@@ -27,7 +27,8 @@ green() { echo -e "\033[0;32m$@\033[0m"; }
 # builds the dockerfile in the current dir.
 # If --pull is passed, will pull. Otherwise cache.
 # If --push, will gcloud push
-buildcurrent() {
+buildcurrent() (
+    set -e
 
     # use commit hash version
     HASHTAG=$(imagetag "${PWD##*/}" "$CURRENT_VERSION")
@@ -49,7 +50,9 @@ buildcurrent() {
             gcloud container images add-tag "$TAG"
         fi
     fi
-}
+
+    
+)
 
 FAILED=0
 

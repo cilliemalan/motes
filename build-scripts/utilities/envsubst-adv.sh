@@ -24,6 +24,7 @@ INPUT="cat <<$EOF"
 while IFS= read -r line; do
   INPUT=$(printf "%s\n%s" "$INPUT" "$line")
 done
+INPUT=$(printf "%s\n%s" "$INPUT" "$line")
 
 # close off the heredoc
 INPUT=$(printf "%s\n$EOF\n\n" "$INPUT")

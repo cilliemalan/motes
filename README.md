@@ -199,10 +199,20 @@ To build all docker images for our environment run:
 $ ./build-scripts/build-docker-images.sh
 ```
 
+### Secrets
+We use kubernetes secrets to secure services within the kuberenetes cluster. We need to
+generate secrets for each of our services to use before we create them.
 
-
-
-
+To generate secrets inside k8s, run this:
+```
+$ ./build-scripts/generate-secrets.sh
+Context "minikube" set.
+secret "mariadb" created
+secret "redis" created
+secret "grafana" created
+secret "zookeeper" created
+secret "influxdb" created
+```
 
 
 

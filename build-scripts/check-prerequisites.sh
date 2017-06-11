@@ -18,6 +18,7 @@ checkprereqs() {
     
     white "Checking prerequisites..."
 
+
     echo "Current environment:"
     printenv
     printf "\n\n"
@@ -29,7 +30,12 @@ checkprereqs() {
 
     STATUS=0
 
-    if (sudo -v&>/dev/null); then red "Could sudo"; STATUS=1; else green "Could not sudo"; fi
+
+    if [[ -z "$PROJECT_ID" ]]; then red "No project ID. Please edit terraform.tfvars"; else white "GCP Project: $PROJECT_ID"; fi
+    if [[ -z "$PROJECT_REGION" ]]; then red "No project region. Please edit terraform.tfvars"; else white "GCP Project: $PROJECT_REGION"; fi
+    if [[ -z "$DNS_NAME" ]]; then red "No project DNS name. Please edit terraform.tfvars"; else white "GCP Project: $DNS_NAME"; fi
+
+    if (sudo -v&>/dev/null); then red "Could sudo - fail"; STATUS=1; else green "Could not sudo - good!"; fi
 
     echo "Checking Docker:"
     if docker --version 2>/dev/null; then green "Docker good!"; else red "Docker fail"; STATUS=1; fi
@@ -46,6 +52,12 @@ checkprereqs() {
 
     echo "Checking gcloud:"
     if gcloud version; then green "gcloud good!"; else red "gcloud fail"; STATUS=1; fi
+
+    echo "Checking gcloud project $PROJECT_ID:"
+    PROJECT_DESC=$(gcloud projects describe $PROJECT_ID)
+    echo "$PROJECT_DESC"
+    PROJECT_STATUS=$(echo "$PROJECT_DESC" | grep -e "lifecycleState: " | sed 's/lifecycleState: //')
+    if [[ "$PROJECT_STATUS" == "ACTIVE" ]]; then green "gcloud project $PROJECT_ID good!"; else red "gcloud project  $PROJECT_ID fail"; STATUS=1; fi
 
 
     echo -e "\n\n\n"

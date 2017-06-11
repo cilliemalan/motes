@@ -56,6 +56,43 @@ else
     echo "mount exists!"
 fi
 
+
+
+echo "configuring debug services..."
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Service
+metadata:
+  name: local-dev-debugger
+  labels:
+    app: local-dev-debugger
+spec:
+  ports:
+    - name: debugger
+      port: 5858
+      nodePort: 31858
+  type: NodePort
+  selector:
+    app: local-dev
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: local-dev
+  labels:
+    app: local-dev
+spec:
+  ports:
+    - name: http
+      port: 3000
+      nodePort: 31000
+  type: NodePort
+  selector:
+    app: local-dev
+EOF
+
+
+
 # run a pod for dev stuff
 cat <<EOF | kubectl apply -f -
 apiVersion: v1

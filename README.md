@@ -143,6 +143,14 @@ All good!
 If it says "All good!" then all prereqs are accounted for and we can move on to the next step!
 
 ## 2. Deploying supporting infrastructure
+Now we are ready to starting making infrastructure. First thing is to build the docker images.
+
+This will take a good while and a fast internet connection will help. Subsequent builds will be quick.
+
+To build all docker images for our environment run:
+```
+$ ./build-scripts/build-docker-images.sh
+```
 
 # Deploying the project to GCP
 

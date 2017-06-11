@@ -13,20 +13,25 @@ getresource() {
     kubectl get "$1" | grep -P '^(?!NAME).*' | sed -r "s/^([a-zA-Z0-9-]+).*/$1\/\1/"
 }
 
-
-
+deleteresource() {
+    local resourcesToDelete=$(getresource $1)
+    if [[ -n "$resourcesToDelete" ]]; then
+        kubectl delete $resourcesToDelete
+    fi
+}
 
 read -p "Are you sure? [y/N]"
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-    echo "Deleting services (1/4)"
-    kubectl delete $(getresource svc)
-    echo "Deleting statfulsets (2/4)"
-    kubectl delete $(getresource statefulsets)
-    echo "Deleting deployments (3/4)"
-    kubectl delete $(getresource deploy)
-    echo "Deleting pods (4/4)"
-    kubectl delete $(getresource po)
+    RESOURCES=(svc statefulsets deploy po pvc pv)
+    NUMRES=${#RESOURCES[@]}
+    CURR=1
+
+    for resource in ${RESOURCES[@]}; do
+        echo "Deleting $resource (step $CURR/$NUMRES)"
+        deleteresource $resource
+    done
+
 fi
 
 

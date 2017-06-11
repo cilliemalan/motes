@@ -11,11 +11,17 @@ source "build-scripts/utilities/project-env.sh"
 
 
 if [[ -z "$LABEL" ]]; then
-    echo "Preparing minikube"
-    minikube start
-    if [[ $? != 0 ]]; then
-        echo "Failed to start minikube";
-        exit 1;
+    if [[ $(minikube status --format "{{.MinikubeStatus}} {{.LocalkubeStatus}}") != "Running Running" ]]; then
+        echo "Preparing minikube"
+        minikube start
+        if [[ $? != 0 ]]; then
+            echo "Failed to start minikube";
+            exit 1;
+        else
+            echo "Minikube started";
+        fi
+    else
+            echo "Minikube running";
     fi
 else
 

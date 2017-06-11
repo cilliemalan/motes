@@ -1,2 +1,0 @@
-FROM hopsoft/graphite-statsd
-

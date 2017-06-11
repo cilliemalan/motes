@@ -142,7 +142,39 @@ All good!
 
 If it says "All good!" then all prereqs are accounted for and we can move on to the next step!
 
-## 2. Deploying supporting infrastructure
+## 2. Local prerequisites
+Next let's see if our local build prereqs are in order. This basically does npm install
+and does a few linting checks
+
+First, run the prereqs script:
+```
+$ ./build-scripts/prerequisites.sh
+```
+
+It will install node packages for the `web` project.
+
+Next, run some local tests:
+```
+$ ./build-scripts/run-pretests.sh
+up to date in 2.247s
+
+> motes-web@1.0.0-alpha test C:\Projects\motes\web
+> mocha --grep "^(?!Ecosystem|Integration).+"
+
+
+
+  Testing system
+    internals
+      √ should function
+
+
+  1 passing (16ms)
+
+```
+
+Everything passes, so let's move on.
+
+## 3. Deploying supporting infrastructure
 Now we are ready to starting making infrastructure. First thing is to build the docker images.
 
 This will take a good while and a fast internet connection will help. Subsequent builds will be quick.
@@ -151,6 +183,13 @@ To build all docker images for our environment run:
 ```
 $ ./build-scripts/build-docker-images.sh
 ```
+
+
+
+
+
+
+
 
 # Deploying the project to GCP
 

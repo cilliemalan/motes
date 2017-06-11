@@ -17,12 +17,18 @@ export CURRENT_VERSION=$(git rev-parse --verify --short HEAD)
 # only works on server in gcp
 export ZONE=$(curl -s "http://metadata.google.internal/computeMetadata/v1/instance/zone" -H "Metadata-Flavor: Google" | egrep -o 'zones.*' | sed 's/zones\///')
 
+# generates a tag for an image. First arg is image name, second arg is version (default is latest)
 imagetag() {
     local ver=${2:-latest}
     local host=eu.gcr.io
     local project="$PROJECT_ID"
     local repo="motes-$1"
     echo "$host/$project/$repo:$ver"
+}
+
+# Generates 32 byte password encoded in base64
+generatepassword() {
+    cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1 | base64
 }
 
 export -f imagetag

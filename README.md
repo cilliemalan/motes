@@ -12,22 +12,50 @@ resources and disable production pipelines.
 
 ## Prerequisites
 To run the project you will need:
-1. [Download Minikube](https://github.com/kubernetes/minikube/releases) and put it
+1. [Download VirtualBox](https://www.virtualbox.org/wiki/Downloads) and install. This will
+   be the minikube vm driver. (There are others but I'm going to use this one).
+2. [Download Docker CE](https://docs.docker.com/engine/installation/) and install. On Windows this is going to be a schlep. You really
+   only need a docker client, but go ahead and install the whole thing for
+   what it's worth. Make sure that you **don't** configure docker to run with HyperV. You
+   will need VirtualBox to work for minikube to work.
+   (Note: Yes, I know Minikube supports HyperV. If you're feeling
+   lucky you can try to get started with that but I haven't gotten it to work reliably).
+3. [Download Minikube](https://github.com/kubernetes/minikube/releases) and put it
    somewhere in your PATH.
    - Run `minikube start` in some console window. This will host our local k8s cluster.
    - Run `minikube docker-env` and follow the instructions for said console. This
      is to make docker use the docker engine inside minikube, which means that any
      containers you build we be available inside k8s. Make sure docker works by
      running `docker ps` (it will show no running images but should not fail).
-2. [Download kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and
+4. [Download kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and
    install it or get it in you PATH as well.
    - make sure it works by running `kubectl get all`. Note that minikube needs to
      download a number of images to get k8s started so it may take a few minutes
      for k8s to come online.
+5. [Download GCloud SDK](https://cloud.google.com/sdk/downloads) and install.
+6. [Download Terraform](https://www.terraform.io/) and 
+   install it or get it in you PATH. *Terraform* will create our GoCD server for us and
+   make sure DNS is pointing to the right place and everything. **Before you begin** make
+   sure to tweak the settings inside `terraform.tfvars`. This file contains the settings
+   for our project (DNS name, GCP project, etc.).
+   - make sure Terraform works by running `terraform --version`
+7. [Download NodeJS](https://nodejs.org/en/). Get the latest version, not LTS.
+   - make sure it works by running `node --version` and `npm --version`
 
-*Note: you can see the k8s dashboard by running `minikube dashboard`*
+## GCP Project and variables
+You will need to create a project on GCP and change the variables in `terraform.tfvars`
+The variables in this file are used througout the scripts for the project. Even if you
+don't intend to deploy your project into the cloud, it will still be a good idea to
+create a GCP project regardless as many scripts do sanity checks in this regard.
+
+Once the project is created you will have to run `gcloud init` and authorize that project.
+You will also need to [create credentials and save them](https://cloud.google.com/docs/authentication#setting_up_a_service_account)
+as `gcp-credentials.json`. **Do not commit credentials** The file `gcp-credentials.json` is
+ignored by `.gitignore` by default.
 
 # Getting started locally
+Before we put this project in the cloud, let's get it running locally first.
+
 The steps for running the application (including all supporting services) are:
   1. Create the k8s cluster
   2. Provision supporting services inside k8s (zookeeper, mongo, etc)
@@ -36,9 +64,7 @@ The steps for running the application (including all supporting services) are:
 In your development environment, step 3 is omitted and instead a dev pod is created 
 directly and the application is run and debugged in that.
 
-Before we put this project in the cloud, let's get it running locally first.
-
-## Prerequisites revisited
+## 1. Prerequisites revisited
 I assume you have installed the prereqs above, but let's go over them once again to make
 extra super duper sure everything is in place.
 
@@ -90,6 +116,33 @@ rs/kube-dns-268032401   1         1         1         18d
 ```
 
 As you may have guessed, these pods correspond to the output of docker ps.
+
+**Note:** You may want to check out the the k8s dashboard. This can be seen by running
+`minikube dashboard` from the console. It's okay if it says "Nothing to display here". We
+haven't created anything yet.
+
+Next, we have a script that will quickly check that local prerequisite applications
+are installed and available. To run it, run this from the project root:
+```
+$ ./build-scripts/check-prerequisites.sh
+Checking prerequisites...
+GCP Project: dust-motes
+GCP Project: europe-west1
+GCP Project: dust-motes.com
+Could not sudo - good!
+Docker good!
+Docker perms good!
+Kubectl good!
+Terraform good!
+Node good!
+gcloud good!
+gcloud project dust-motes good!
+All good!
+```
+
+If it says "All good!" then all prereqs are accounted for and we can move on to the next step!
+
+## 2. Deploying supporting infrastructure
 
 # Deploying the project to GCP
 

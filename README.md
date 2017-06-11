@@ -148,14 +148,14 @@ and does a few linting checks
 
 First, run the prereqs script:
 ```
-$ ./build-scripts/prerequisites.sh
+$ ./build-scripts/local-prepare.sh
 ```
 
 It will install node packages for the `web` project.
 
 Next, run some local tests:
 ```
-$ ./build-scripts/run-pretests.sh
+$ ./build-scripts/run-tests.sh
 up to date in 2.247s
 
 > motes-web@1.0.0-alpha test C:\Projects\motes\web
@@ -173,6 +173,21 @@ up to date in 2.247s
 ```
 
 Everything passes, so let's move on.
+
+### Note: Folder structure
+Before moving on, let's take a quick look at the folder structure.
+
+| Folder | What it's for |
+|--------|---------------|
+| `build-scripts` | Contains all scripts for the build process |
+| `build-scripts/utilities` | Contains some helper scripts |
+| `deployments` | Contains the k8s deployment spec files. Note: these files cannot be loaded as they are as they require some preprocessing. |
+| `deployments/app` | Deployment files for the core application. |
+| `deployments/ecosystem` | Deployment files for supporting infrastructure (e.g. redis, zookeeper) |
+| `infrastructure-scripts` | Scripts for the goCD server. |
+| `grafana`, `grafana-proxy`, `graphite`, `redis`, `zookeeper`, `web-proxy`, `web` | Each of these folders will be built into a docker image. The `docker-build-all.sh` script loops through all the directories and builds each one with a `Dockerfile` in it. |
+| `web` | This is the main web application. |
+
 
 ## 3. Deploying supporting infrastructure
 Now we are ready to starting making infrastructure. First thing is to build the docker images.

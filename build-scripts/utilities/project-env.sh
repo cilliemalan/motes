@@ -26,9 +26,4 @@ imagetag() {
     echo "$host/$project/$repo:$ver"
 }
 
-# Generates 32 byte password encoded in base64
-generatepassword() {
-    cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1 | base64
-}
-
 export -f imagetag

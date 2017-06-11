@@ -26,7 +26,6 @@ checkprereqs() {
     echo "Current groups: $(groups 2>/dev/null)"
     echo "More info user info: $(id)"
     echo "Ip Address: $(curl -s 'https://api.ipify.org')"
-    echo "Home dirs: $(ls /home)"
 
     STATUS=0
 

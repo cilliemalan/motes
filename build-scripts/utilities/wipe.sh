@@ -10,7 +10,10 @@ source "build-scripts/utilities/project-env.sh"
 
 
 getresource() {
-    kubectl get "$1" | grep -P '^(?!NAME).*' | sed -r "s/^([a-zA-Z0-9-]+).*/$1\/\1/"
+    kubectl get "$1" |
+        grep -P '^(?!NAME).*' |
+        sed -r "s/^([a-zA-Z0-9-]+).*/$1\/\1/" |
+        grep -P '^(?!svc/kubernetes)(?!secret/default-token)'
 }
 
 deleteresource() {
@@ -23,13 +26,14 @@ deleteresource() {
 read -p "Are you sure? [y/N]"
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-    RESOURCES=(svc statefulsets deploy po pvc pv)
+    RESOURCES=(svc statefulsets deploy po pvc pv secret)
     NUMRES=${#RESOURCES[@]}
     CURR=1
 
     for resource in ${RESOURCES[@]}; do
         echo "Deleting $resource (step $CURR/$NUMRES)"
         deleteresource $resource
+        CURR=$((CURR+1))
     done
 
 fi

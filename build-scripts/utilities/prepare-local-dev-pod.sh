@@ -26,10 +26,21 @@ RUN apt-get update && apt-get install -y inotify-tools rsync && rm -rf /etc/app/
 # remove the existing app
 RUN rm -rf /usr/src/app && mkdir /usr/src/app && rm -rf /var/lib/apt/lists/*
 
+RUN npm install -g nodemon
+
 # container continually syncs while running
-CMD ["bash", "-c", "while true; do rsync -avz --delete --exclude 'node_modules' --exclude 'package-lock.json' /usr/src/app-host/ /usr/src/app; sleep 5; done"]
+CMD ["bash", "-c", "\
+synfiles() ( rsync -avz --delete --exclude 'node_modules' --exclude 'package-lock.json' /usr/src/app-host/ /usr/src/app; ) ;\
+synloop() ( while true; do synfiles; sleep 5; done; ) ; \
+synfiles && npm install --no-optional; \
+synloop & nodemon --inspect=0.0.0.0:5858 -nolazy index.js"]
 
 EOF
+
+
+
+
+
 
 if [[ $? != 0 ]]; then
     echo "Failed to build dev image"
@@ -147,10 +158,10 @@ if [[ $RUNNING == 0 ]]; then
 fi
 
 # kill any existing running nodejs instances
-kubectl exec local-dev -t -- bash -c 'for pid in $(ps -ef | grep -E ":[0-9][0-9] node" | awk "{print \$2}"); do kill -9 $pid; done'
+# kubectl exec local-dev -t -- bash -c 'for pid in $(ps -ef | grep -E ":[0-9][0-9] node" | awk "{print \$2}"); do kill -9 $pid; done'
 
 
 
 # run npm install on pod
-echo "Running npm install"
-kubectl exec local-dev -t -- npm install --no-optional
+# echo "Running npm install"
+# kubectl exec local-dev -t -- npm install --no-optional

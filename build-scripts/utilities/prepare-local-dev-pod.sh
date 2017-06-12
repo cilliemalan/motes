@@ -146,6 +146,11 @@ if [[ $RUNNING == 0 ]]; then
     exit 3;
 fi
 
+# kill any existing running nodejs instances
+kubectl exec local-dev -t -- bash -c 'for pid in $(ps -ef | grep -E ":[0-9][0-9] node" | awk "{print \$2}"); do kill -9 $pid; done'
+
+
+
 # run npm install on pod
 echo "Running npm install"
 kubectl exec local-dev -t -- npm install --no-optional

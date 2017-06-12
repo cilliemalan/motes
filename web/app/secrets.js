@@ -18,11 +18,16 @@ async function initializeAsync() {
         agentOptions
     });
 
+    function base64decode(input) {
+        return Buffer.from(input, 'base64').toString("ascii");
+    }
+
     if (data && data.items) {
         data.items.filter(s => s.type == 'Opaque')
             .forEach(s => {
                 let name = s.metadata.name;
-                let data = s.data;
+                let data = {};
+                Object.keys(s.data).forEach(k => data[k] = base64decode(s.data[k]));
                 allSecrets[name] = data;
             });
     }

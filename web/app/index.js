@@ -6,8 +6,8 @@ const zk = require('./zookeeperProvider');
 
 console.log('starting...');
 
-// change cwd to where this script is
-process.chdir(__dirname);
+// change cwd to the application root
+process.chdir(path.join(__dirname, '..'));
 
 // some vars
 const port = process.env.PORT || 3000;

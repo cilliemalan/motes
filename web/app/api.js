@@ -9,7 +9,7 @@ const redis = require("redis");
 const MongoClient = require('mongodb').MongoClient;
 bluebird.promisifyAll(redis.RedisClient.prototype);
 
-const config = require('./package.json');
+const config = require('../package.json');
 const zk = require('./zookeeperProvider');
 module.exports = router;
 

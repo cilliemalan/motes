@@ -19,22 +19,24 @@ generatepassword() {
 
 
 savepasswords() {
-    local mariadb=$(generatepassword)
-    local mariadb_root=$(generatepassword)
     local redis=$(generatepassword)
+    local mongo1=$(generatepassword)
+    local mongo2=$(generatepassword)
     local zookeeper=$(generatepassword)
     local grafana=$(generatepassword)
     local influxdb1=$(generatepassword)
     local influxdb2=$(generatepassword)
 
-    # MariaDb
-    kubectl create secret generic mariadb \
-        "--from-literal=password=$mariadb" \
-        "--from-literal=root_password=$mariadb_root"
-
     # Redis
     kubectl create secret generic redis \
         "--from-literal=password=$redis"
+
+    # Mongo
+    kubectl create secret generic mongo \
+        "--from-literal=rootuser=admin" \
+        "--from-literal=rootpassword=@mongo1" \
+        "--from-literal=user=mongo" \
+        "--from-literal=password=@mongo2" \
 
     # Grafana
     kubectl create secret generic grafana \

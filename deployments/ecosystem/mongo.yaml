@@ -32,7 +32,30 @@ spec:
       containers:
       - name: mongo
         imagePullPolicy: IfNotPresent
-        image: mongo:latest
+        image: eu.gcr.io/$PROJECT_ID/motes-mongo:$CONTAINER_VERSION
+        env:
+          - name: MONGO_INITDB_DATABASE
+            value: app
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongo
+                key: rootuser
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongo
+                key: rootpassword
+          - name: MONGO_INITDB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongo
+                key: user
+          - name: MONGO_INITDB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongo
+                key: password
         ports:
         - containerPort: 27017
           name: mongo
@@ -48,4 +71,4 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 1Gi
+          storage: $DATADISKSIZE

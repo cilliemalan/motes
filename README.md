@@ -207,13 +207,26 @@ To generate secrets inside k8s, run this:
 ```
 $ ./build-scripts/generate-secrets.sh
 Context "minikube" set.
-secret "mariadb" created
 secret "redis" created
 secret "grafana" created
 secret "zookeeper" created
 secret "influxdb" created
 ```
 
+
+### Deploy the services
+Now that the secrets have been created and images have been built we can go ahead and
+create all the supporting services. Doing so will start the following:
+- **Grafana** - for displaying various graphs and monitorin for our application.
+- **Grafana Proxy** - a HAProxy sitting in front of grafana.
+- **InfluxDB** - for capturing time series data, used for monitoring our application.
+- **MongDB** - a document store we can use as a database.
+- **Redis** - an in-memory cache for our application (note: ours is not configured with persistence).
+- **Zookeeper** - Allows for coordination of services (e.g. distributed locking, barriers, etc.).
+
+
+### Testing the environment
+Next, let's run our environment tests to see if the environment is functioning as expected.
 
 
 # Deploying the project to GCP

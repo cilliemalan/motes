@@ -27,7 +27,7 @@ RUN apt-get update && apt-get install -y inotify-tools rsync && rm -rf /etc/app/
 RUN rm -rf /usr/src/app && mkdir /usr/src/app && rm -rf /var/lib/apt/lists/*
 
 # container continually syncs while running
-CMD ["bash", "-c", "while true; do rsync -avz --exclude 'node_modules' /usr/src/app-host/ /usr/src/app; sleep 5; done"]
+CMD ["bash", "-c", "while true; do rsync -avz --delete --exclude 'node_modules' --exclude 'package-lock.json' /usr/src/app-host/ /usr/src/app; sleep 5; done"]
 
 EOF
 

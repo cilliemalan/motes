@@ -36,7 +36,9 @@
     "body-parser": "^1.17.1",
     "on-finished": "~2.3.0",
     "on-headers": "~1.0.1",
-    "kubernetes-client": "^3.11.0"
+    "kubernetes-client": "^3.11.0",
+    "request-promise": "^4.2.1",
+    "request":"^2.81.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",

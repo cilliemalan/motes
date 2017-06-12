@@ -50,8 +50,8 @@ if [[ $MOUNT_EXISTS != "exists" ]]; then
     echo "  minikube mount '$DIR:/motes'"
     echo
     echo "But this will probably not work. As a workaround use your VM driver"
-    echo "(probably virtualbox) and create the mount manually."
-    # exit 4
+    echo "(guessing virtualbox) and create the mount manually."
+    exit 4
 else
     echo "mount exists!"
 fi
@@ -93,7 +93,7 @@ EOF
 
 
 
-# run a pod for dev stuff
+echo "Creating dev pod..."
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Pod

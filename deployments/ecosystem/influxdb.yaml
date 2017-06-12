@@ -1,0 +1,95 @@
+# influxdb:alpine
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb
+  labels:
+    app: influxdb
+    set: ecosystem
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+  clusterIP: None
+  selector:
+    app: influxdb
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: influxdb
+spec:
+  serviceName: influxdb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: influxdb
+        set: ecosystem
+      annotations:
+        pod.alpha.kubernetes.io/initialized: "true"
+    spec:
+      containers:
+        - name: influxdb
+          imagePullPolicy: IfNotPresent
+          image: eu.gcr.io/$PROJECT_ID/motes-influxdb:$CONTAINER_VERSION
+          env:
+            - name: INFLUXDB_DATA_DIR
+              value: "/opt/lib/influxdb/db/data"
+            - name: INFLUXDB_META_DIR
+              value: "/opt/lib/influxdb/db/meta"
+            - name: INFLUXDB_DATA_WAL_DIR
+              value: "/opt/lib/influxdb/wal"
+            - name: INFLUXDB_DEFAULT_DATABASE
+              value: influx
+            - name: INFLUXDB_ADMINUSERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb
+                  key: adminusername
+            - name: INFLUXDB_ADMINPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb
+                  key: adminpassword
+            - name: INFLUXDB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb
+                  key: username
+            - name: INFLUXDB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb
+                  key: password
+          ports:
+            - name: http
+              containerPort: 8086
+            - name: rpc
+              containerPort: 8088 
+          volumeMounts:
+            - name: influx-db
+              mountPath: /opt/lib/influxdb/db
+          volumeMounts:
+            - name: influx-wal
+              mountPath: /var/lib/influxdb/wal
+  volumeClaimTemplates:
+    - metadata:
+        name: influx-db
+        annotations:
+          volume.alpha.kubernetes.io/storage-class: anything
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: $DATADISKSIZE
+    - metadata:
+        name: influx-wal
+        annotations:
+          volume.alpha.kubernetes.io/storage-class: anything
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: $DATADISKSIZE

@@ -24,7 +24,8 @@ savepasswords() {
     local redis=$(generatepassword)
     local zookeeper=$(generatepassword)
     local grafana=$(generatepassword)
-    local influxdb=$(generatepassword)
+    local influxdb1=$(generatepassword)
+    local influxdb2=$(generatepassword)
 
     # MariaDb
     kubectl create secret generic mariadb \
@@ -45,7 +46,10 @@ savepasswords() {
 
     # InfluxDb
     kubectl create secret generic influxdb \
-        "--from-literal=password=$influxdb"
+        "--from-literal=adminusername=admin" \
+        "--from-literal=adminpassword=$influxdb1" \
+        "--from-literal=username=influx" \
+        "--from-literal=password=$influxdb2"
 }
 
 # generate passwords and store in k8s

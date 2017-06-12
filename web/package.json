@@ -34,7 +34,6 @@
     "node-zookeeper-client": "^0.2.2",
     "redis": "^2.7.1",
     "body-parser": "^1.17.1",
-    "graphite": "^0.0.7",
     "on-finished": "~2.3.0",
     "on-headers": "~1.0.1"
   },
@@ -45,8 +44,9 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-node": "^4.2.2",
     "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "opn": "^5.0.0",
+    "eslint-plugin-standard": "^3.0.1"
+  },
+  "optionalDependencies": {
     "ghostjs": "^1.9.0",
     "nyc": "^10.3.2",
     "istanbul": "^0.4.5"

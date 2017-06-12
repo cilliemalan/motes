@@ -1,5 +1,5 @@
 const assert = require('chai').assert;
-const zk = require('../zookeeperProvider');
+const zk = require('../../app/zookeeperProvider');
 
 describe("Integration", function () {
 

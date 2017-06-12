@@ -4,8 +4,8 @@
   "description": "Dust motes - web server",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --grep \"^(?!Ecosystem|Integration).+\"",
-    "test-all": "nyc --reporter=html --reporter=text  mocha",
+    "test": "mocha -c",
+    "test-integration": "mocha -c test/integration",
     "test-e2e": "ghostjs e2e/*.js",
     "start": "node ."
   },
@@ -35,7 +35,8 @@
     "redis": "^2.7.1",
     "body-parser": "^1.17.1",
     "on-finished": "~2.3.0",
-    "on-headers": "~1.0.1"
+    "on-headers": "~1.0.1",
+    "kubernetes-client": "^3.11.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",

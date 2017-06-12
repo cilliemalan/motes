@@ -3,11 +3,9 @@
 const express = require('express');
 const router = express.Router();
 
-const bluebird = require('bluebird');
-
-const redis = require("redis");
+const integration = require('./integration');
 const MongoClient = require('mongodb').MongoClient;
-bluebird.promisifyAll(redis.RedisClient.prototype);
+
 
 const config = require('../package.json');
 const zk = require('./zookeeperProvider');
@@ -66,10 +64,11 @@ router.postAsync('/mongo', async (req, res) => {
 // test redis url
 router.postAsync('/redis', async (req, res) => {
     try {
+        let redisClient = integration.createRedisClient();
+        
         const crypto = require("crypto");
         let key = crypto.randomBytes(8).toString("hex");
         let value = crypto.randomBytes(8).toString("hex");
-        let redisClient = redis.createClient({ host: 'redis' });
         await redisClient.setAsync(key, value);
         var gotten = await redisClient.getAsync(key);
         redisClient.delAsync(key);

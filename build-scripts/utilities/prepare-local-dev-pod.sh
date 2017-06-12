@@ -148,4 +148,4 @@ fi
 
 # run npm install on pod
 echo "Running npm install"
-kubectl exec local-dev -t -- npm install
+kubectl exec local-dev -t -- npm install --no-optional

@@ -16,7 +16,7 @@ green() { echo -e "\033[0;32m$@\033[0m"; }
 RESULT=0
 
 cd web
-npm install
+npm install --no-optional
 if [[ $? != 0 ]]; then red "failed to NPM install"; RESULT=$?; fi
 
 npm run test

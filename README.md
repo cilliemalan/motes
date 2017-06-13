@@ -224,10 +224,55 @@ create all the supporting services. Doing so will start the following:
 - **Redis** - an in-memory cache for our application (note: ours is not configured with persistence).
 - **Zookeeper** - Allows for coordination of services (e.g. distributed locking, barriers, etc.).
 
+To deploy these services run:
+```
+$ ./build-scripts/deploy-ecosystem.sh
+```
 
-### Testing the environment
-Next, let's run our environment tests to see if the environment is functioning as expected.
+Next, open up the minikube dashboard. You will notice under **Workloads** that a number of
+deployments, stateful sets, replica sets, services, and pods have been created for these
+services.
 
+### 4. Local Dev Pod
+Now that the ecosystem is deployed to our local cluster, let's get the application up and
+running. In a remote environment we would have a number of pods running the application
+as well as a number of proxy pods doing load balancing. For our local dev environment
+we only have one pod that is tweaked very specifically for our development needs.
+
+In order to have a smooth development experience, files are synced from our project folder
+directly to the pod, and services are made so we can debug and browse application. Furthermore
+the application is outfitted with nodemon, which will restart the application if any js files
+were to change.
+
+#### Creating the mount in virtualBox
+*Unfortunately* to get this working, one manual step needs to be done. This can be automated
+but at time of writing minikube has some problems and the mount needs to be created manually.
+In order to sync the files a mount needs to be created on the minikube VM (note: not a container,
+that does happen automatically, but the VM itself - the k8s host). In order to create the
+mount, do the following:
+1. Open VirtualBox manager. You will notice the minikube VM is running there.
+   ![](http://i.imgur.com/hkjQ18j.png)
+2. Select it and click **Settings** on the toolbar above
+   ![](http://i.imgur.com/jywBKrh.png)
+3. Next, go to **Shared Folders** on the left.
+   ![](http://i.imgur.com/t2OUArv.png)
+4. As you can see, there is an item in the list called "motes". You won't have this item
+   and will need to create it. In order to create it, click the **+** button to the right.
+   ![](http://i.imgur.com/4T8WPdQ.png)
+5. A small dialog will pop up. In the first field enter the local path (on your computer)
+   to the folder where you cloned this repo. As you may have guessed for me that is
+   `C:\Projects\motes`.
+
+   In the second field, enter the text **motes**. This is the name of the path where it
+   will mount your local folder.
+
+   Next check **Auto-mount** and **Make Permanent** and then click **Ok**.
+6. To make sure that this worked, open a shell and type `minikube ssh`. This will SSH into
+   the minikube VM. Once you are in, check that the path `/motes` contains the files. For
+   example:
+   ![](http://i.imgur.com/XVEKwdt.png)
+
+No you're ready to move on to the next step
 
 # Deploying the project to GCP
 

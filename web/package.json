@@ -3,10 +3,21 @@
   "version": "1.0.0-alpha",
   "description": "Dust motes - web server",
   "main": "index.js",
+  "nyc": {
+    "check-coverage": true,
+    "cache": true,
+    "reporter": [
+      "lcov",
+      "text-lcov",
+      "text-summary",
+      "html"
+    ],
+    "all": true,
+    "include": ["app/**/*.js"]
+  },
   "scripts": {
     "test": "mocha -c",
-    "test-integration": "mocha -c test/integration",
-    "test-all": "mocha -c test/integration",
+    "test-all": "nyc mocha -c test/integration",
     "test-e2e": "ghostjs e2e/*.js",
     "start": "node ."
   },
@@ -31,7 +42,6 @@
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "influx": "^5.0.7",
-    "istanbul": "^0.4.5",
     "kubernetes-client": "^3.11.0",
     "lodash": "^4.17.4",
     "mocha": "^3.4.2",
@@ -51,7 +61,8 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-node": "^4.2.2",
     "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-standard": "^3.0.1"
+    "eslint-plugin-standard": "^3.0.1",
+    "nyc": "^11.0.2"
   },
   "optionalDependencies": {}
 }

@@ -30,6 +30,12 @@ fi
 kubectl exec $SCRIPTENV-dev -ti -- npm run test-all
 RESULT=$?
 
+# copy out code coverage results
+kubectl exec -i local-dev -- tar -cpzf - coverage | tar -xpzf - coverage &
+kubectl exec -i local-dev -- tar -cpzf - .nyc_output | tar -xpzf - .nyc_output &
+wait
+
+
 # check output
 if [[ $RESULT == 0 ]]; then
     green "Tests passed!"

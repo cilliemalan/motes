@@ -1,17 +1,14 @@
-const bluebird = require('bluebird');
 const assert = require('chai').assert;
+const integration = require('../../app/integration');
 
-const redis = require("redis");
-
-
-bluebird.promisifyAll(redis.RedisClient.prototype);
 
 describe("Integration", function () {
 
     let redisClient;
 
-    before(function () {
-        redisClient = redis.createClient({ host: 'redis' });
+    before(async function () {
+        await require('../../app/integration/secrets').initializeAsync();
+        redisClient = integration.createRedisClient();
     });
 
     after(function () {

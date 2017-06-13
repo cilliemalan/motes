@@ -1,9 +1,16 @@
 const assert = require('chai').assert;
-const zk = require('../../app/zookeeperProvider');
+const zk = require('../../app/integration/zookeeper');
 
 describe("Integration", function () {
 
     describe("Zookeeper Provider", function () {
+
+        it("should be accessible", async function () {
+            const client = await zk.getClientAsync();
+            const test = await client.existsAsync('/');
+
+            assert.isOk(test);
+        });
 
         it("should be able to get a client", async function () {
 

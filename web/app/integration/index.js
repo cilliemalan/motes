@@ -9,12 +9,21 @@ bluebird.promisifyAll(redis.RedisClient.prototype);
 const MongoClient = mongodb.MongoClient;
 
 
+let redisClient;
+
 
 /**
  * Creates a redis client connected to the local k8s redis
  */
 function createRedisClient() {
-    return redis.createClient({ host: 'redis', password: secrets.get('redis', 'password') });
+    if (!redisClient) {
+        redisClient = redis.createClient({ host: 'redis', password: secrets.get('redis', 'password') });
+
+        redisClient.on('warning', logger.warn);
+        redisClient.on('error', logger.error);
+    }
+
+    return redisClient;
 }
 
 /**

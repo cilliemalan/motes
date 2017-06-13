@@ -8,8 +8,6 @@
     "cache": true,
     "reporter": [
       "lcov",
-      "text-lcov",
-      "text-summary",
       "html"
     ],
     "all": true,

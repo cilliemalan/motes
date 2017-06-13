@@ -42,6 +42,12 @@ To run the project you will need:
 7. [Download NodeJS](https://nodejs.org/en/). Get the latest version, not LTS.
    - make sure it works by running `node --version` and `npm --version`
 
+### A note about bash in windows
+You will see this project exclusively makes use of bash scripts. In order to use these
+scripts in windows you can use **git bash** which comes installed with *Git for Windows*.
+The Linux Subsystem for Windows may also work, but will probably require a large number
+of hacks to get kubectl, minikube, and virtualbox to work with it.
+
 ## GCP Project and variables
 You will need to create a project on GCP and change the variables in `terraform.tfvars`
 The variables in this file are used througout the scripts for the project. Even if you
@@ -115,7 +121,9 @@ NAME                    DESIRED   CURRENT   READY     AGE
 rs/kube-dns-268032401   1         1         1         18d
 ```
 
-As you may have guessed, these pods correspond to the output of docker ps.
+As you may have guessed, these pods correspond to the output of docker ps. The pods you
+see running here are for kubernetes internal functions. You don't see them unless you
+specify the kube-system namespace.
 
 **Note:** You may want to check out the the k8s dashboard. This can be seen by running
 `minikube dashboard` from the console. It's okay if it says "Nothing to display here". We
@@ -142,7 +150,7 @@ All good!
 
 If it says "All good!" then all prereqs are accounted for and we can move on to the next step!
 
-## 2. Local prerequisites
+## 2. Local preparations
 Next let's see if our local build prereqs are in order. This basically does npm install
 and does a few linting checks
 
@@ -151,7 +159,9 @@ First, run the prereqs script:
 $ ./build-scripts/local-prepare.sh
 ```
 
-It will install node packages for the `web` project.
+It will install node packages for the `web` project. This is not particularly important
+as the project will only ever be run from inside a k8s pod, but for the prechecks it
+uses mocha, so `npm install` it is...
 
 Next, run some local tests:
 ```
@@ -159,7 +169,7 @@ $ ./build-scripts/run-tests.sh
 up to date in 2.247s
 
 > motes-web@1.0.0-alpha test C:\Projects\motes\web
-> mocha --grep "^(?!Ecosystem|Integration).+"
+> mocha -c"
 
 
 
@@ -367,6 +377,16 @@ environment.**
 There also is included a launch config for attaching VSCode to the running k8s cluster
 running the local dev pod. You may need to change the IP Address to match your local
 minikube VM.
+
+### 5. Unit Tests & Code Coverage
+Now that the dev pod is up and running, we can run unit tests. Run:
+```
+$ ./build-scripts/run-unit-tests.sh
+```
+
+After this you should see that all tests pass. If some fail there is likely something
+wrong with the ecosystem, so check which tests failed and check that those services
+were created successfully.
 
 # Deploying the project to GCP
 

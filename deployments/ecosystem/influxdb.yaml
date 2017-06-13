@@ -63,6 +63,8 @@ spec:
                 secretKeyRef:
                   name: influxdb
                   key: password
+            - name: INFLUXDB_HTTP_BIND_ADDRESS
+              value: ":80"
           ports:
             - name: http
               containerPort: 8086

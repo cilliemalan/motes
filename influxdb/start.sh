@@ -7,17 +7,19 @@ createusers() (
     local password=${INFLUXDB_PASSWORD:-influx}
     local database=${INFLUXDB_DEFAULT_DATABASE:-influx}
 
+    local port=$(echo "$INFLUXDB_HTTP_BIND_ADDRESS" | grep -Eo '[0-9]+')
+
     sleep 1
 
     echo "Setting influxdb admin user"
-    influx -execute "CREATE USER $adminusername WITH PASSWORD '$adminpassword' WITH ALL PRIVILEGES"
+    influx --port "$port" -execute "CREATE USER $adminusername WITH PASSWORD '$adminpassword' WITH ALL PRIVILEGES"
 
     echo "Creating default influxdb database"
-    influx -username "$adminusername" -password "$adminpassword" -execute "CREATE DATABASE $database"
+    influx --port "$port" -username "$adminusername" -password "$adminpassword" -execute "CREATE DATABASE $database"
 
     echo "Creating default influxdb user"
-    influx -username "$adminusername" -password "$adminpassword" -execute "CREATE USER $username WITH PASSWORD '$password'"
-    influx -username "$adminusername" -password "$adminpassword" -execute "GRANT ALL on $database to $username"
+    influx --port "$port" -username "$adminusername" -password "$adminpassword" -execute "CREATE USER $username WITH PASSWORD '$password'"
+    influx --port "$port" -username "$adminusername" -password "$adminpassword" -execute "GRANT ALL on $database to $username"
 
 
 )

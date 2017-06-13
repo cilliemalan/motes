@@ -43,7 +43,7 @@ RUN npm install -g nodemon
 
 # container continually syncs while running
 CMD ["bash", "-c", "\
-synfiles() ( rsync -avz --delete --exclude 'node_modules' --exclude 'package-lock.json' /usr/src/app-host/ /usr/src/app; ) ;\
+synfiles() ( rsync -avz --delete --exclude 'node_modules' /usr/src/app-host/ /usr/src/app; ) ;\
 synloop() ( while true; do synfiles; sleep 5; done; ) ; \
 synfiles && npm install --no-optional; \
 synloop & nodemon --inspect=0.0.0.0:5858 -nolazy index.js"]

@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# this script makes sure the local dev pod is running, kills any existing
-# nodejs instances, and runs npm install in dev env. This is for a local minikube cluster.
+# this script makes sure the local dev pod is running. The local dev pod will have
+# a running application that restarts when any js file is modified (using nodemon).
+# Furthermore, files are continually synced between the local dev folder and the
+# pod. To do this a mount must be created in virtualbox (see README.md)
 
 
 # run inside proj dir and use project env

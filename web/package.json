@@ -31,6 +31,7 @@
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "influx": "^5.0.7",
+    "istanbul": "^0.4.5",
     "kubernetes-client": "^3.11.0",
     "lodash": "^4.17.4",
     "mocha": "^3.4.2",

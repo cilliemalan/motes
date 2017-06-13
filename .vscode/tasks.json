@@ -6,7 +6,6 @@
             "isShellCommand": false,
             "showOutput": "always",
             "echoCommand": false,
-            "isTestCommand": true,
             "command": "bash",
             "args": [
                 "-l",
@@ -18,12 +17,14 @@
             "taskName": "tests",
             "isShellCommand": false,
             "showOutput": "always",
+            "isTestCommand": true,
             "echoCommand": false,
             "command": "bash",
             "args": [
                 "-l",
                 "--",
-                "build-scripts/run-unit-tests.sh"
+                "build-scripts/run-unit-tests.sh",
+                "--quick"
             ]
         }
     ]

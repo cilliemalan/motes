@@ -89,10 +89,21 @@ router.postAsync('/redis', async (req, res) => {
     }
 });
 
-// test graphite url
-router.postAsync('/graphite', async (req, res) => {
+// test influxdb url
+router.postAsync('/influx', async (req, res) => {
     try {
-        res.json({ success: true });
+        let influx = await integration.createInfluxDbConnection();
+        await influx.writePoints([{
+            measurement: 'button_clicks',
+            tags: { nodeVersion: process.version, host: require('os').hostname() },
+            fields: { count: 1 }
+        }]);
+
+        const clickQueryResult = await influx.query(`
+            select COUNT("count") from button_clicks
+        `);
+
+        res.json({ success: true, total: clickQueryResult[0].count });
     } catch (e) {
         console.error(e);
         res.status(500).json({ success: false, error: e.toString() });

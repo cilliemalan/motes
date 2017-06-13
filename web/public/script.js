@@ -90,8 +90,8 @@ const zookeepertestcontainer = document.getElementById('zookeepertestcontainer')
 const zookeepertestbutton = document.getElementById('zookeepertestbutton');
 const mongotestcontainer = document.getElementById('mongotestcontainer');
 const mongotestbutton = document.getElementById('mongotestbutton');
-const graphitetestcontainer = document.getElementById('graphitetestcontainer');
-const graphitetestbutton = document.getElementById('graphitetestbutton');
+const influxtestcontainer = document.getElementById('influxtestcontainer');
+const influxtestbutton = document.getElementById('influxtestbutton');
 
 
 redistestbutton.addEventListener('click', () => {
@@ -112,8 +112,10 @@ mongotestbutton.addEventListener('click', () => {
     });
 });
 
-graphitetestbutton.addEventListener('click', () => {
-    makeApiCall('graphite', 'POST', null, graphitetestcontainer).then(r => {
-        graphitetestcontainer.innerText = r.success ? '👍' : '😭';
+influxtestbutton.addEventListener('click', () => {
+    makeApiCall('influx', 'POST', null, influxtestcontainer).then(r => {
+        let statusText = r.success ? '👍' : '😭';
+        statusText += ` that was click #${r.total} out of all clicks`;
+        influxtestcontainer.innerText = statusText;
     });
 });

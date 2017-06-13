@@ -18,10 +18,10 @@ function createRedisClient() {
  * Connects to mongo and returns a client
  */
 async function mongoConnectAsync(database = 'app') {
+    await secrets.initializeAsync();
     const username = secrets.get("mongo", "user");
     const password = secrets.get("mongo", "password");
     const url = `mongodb://${encodeURIComponent(username)}:${encodeURIComponent(password)}@mongo:27017/${database}`;
-
     const db = await MongoClient.connect(url);
 
     return db;

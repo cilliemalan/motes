@@ -1,78 +1,31 @@
 
-const zookeeper = require('node-zookeeper-client');
+const zookeeper = require('node-zookeeper-client-async');
 
 // connect to zookeeper
-const client = zookeeper.createClient('zookeeper:2181');
+const client = zookeeper.createAsyncClient('zookeeper:2181');
 let clientPromise;
 
-function getClientInternalAsync() {
-    return new Promise((resolve, reject) => {
-        client.once('connected', () => {
-            resolve(client);
-        });
-        client.on('error', e => reject(e));
-        client.connect();
-    });
-}
-
+/**
+ * Connects the client on first call and resolves the client once connected
+ */
 function getClientAsync() {
     if (!clientPromise) {
-        clientPromise = getClientInternalAsync();
+        clientPromise = client.connectAsync().then(() => client);
     }
 
     return clientPromise;
 }
 
-client.createAsync = function createAsync(path, data, acls, mode) {
-    return new Promise((resolve, reject) => {
-        client.create(path, data, acls, mode, (e, path) => {
-            if (e) reject(e);
-            else {
-                resolve(path);
-            }
-        });
-    });
-};
-
-client.removeAsync = function removeAsync(path, version) {
-    if (typeof version != 'number') version = -1;
-    return new Promise((resolve, reject) => {
-        client.remove(path, version, (e) => {
-            if (e) reject(e);
-            else {
-                resolve();
-            }
-        });
-    });
-};
-
-client.getChildrenAsync = function getChildrenAsync(path, watcher) {
-    return new Promise((resolve, reject) => {
-        client.getChildren(path, watcher, (e, children, stats) => {
-            if (e) reject(e);
-            else {
-                resolve({ children, stats });
-            }
-        });
-    });
-};
-
-client.existsAsync = function existsAsync(path, watcher) {
-    return new Promise((resolve, reject) => {
-        client.exists(path, watcher, (e, stat) => {
-            if (e) reject(e);
-            else {
-                resolve(stat);
-            }
-        });
-    });
-};
-
+/**
+ * Regisers this application as a server on zookeeper. Resolves
+ * the path of the registration.
+ * @param {string} name the name of this server
+ */
 async function registerAsync(name) {
     await getClientAsync();
-    if (!await client.existsAsync('/web')) {
-        await client.createAsync('/web');
-    }
+
+    await client.mkdirpAsync('/web');
+    
     return await client.createAsync(
         '/web/instance-',
         Buffer.from(JSON.stringify({ name })),
@@ -80,15 +33,22 @@ async function registerAsync(name) {
         zookeeper.CreateMode.EPHEMERAL_SEQUENTIAL);
 }
 
+/**
+ * Removes a registration of a specific server.
+ * @param {*} path The path of the regustratuib as returned by registerAsync
+ */
 async function unRegisterAsync(path) {
     await getClientAsync();
     await client.removeAsync(path);
 }
 
+/**
+ * Returns the number of registered servers on zk.
+ */
 async function getNumberOfActiveServersAsync() {
     await getClientAsync();
     var children = await client.getChildrenAsync('/web');
-    return children.children.length;
+    return children.length;
 }
 
 module.exports = {

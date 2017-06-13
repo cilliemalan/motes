@@ -4,8 +4,6 @@ const express = require('express');
 const router = express.Router();
 
 const integration = require('./integration');
-const MongoClient = require('mongodb').MongoClient;
-
 
 const config = require('../package.json');
 const zk = require('./integration/zookeeper');
@@ -42,18 +40,30 @@ router.postAsync('/zookeeper', async (req, res) => {
 // test mongo url
 router.postAsync('/mongo', async (req, res) => {
     try {
-        const url = 'mongodb://mongo:27017/test';
-        await new Promise((resolve, reject) => {
-            MongoClient.connect(url, (e, db) => {
-                if (e) reject(e);
-                if (!db) reject('no db!');
-                db.close(e => {
-                    if (e) reject(e);
-                    else resolve();
-                });
-            });
-        });
 
+        // connect
+        const db = await integration.mongoConnectAsync();
+        const col = db.collection('testitems');
+
+        // the item to insert
+        const dbitem = {
+            id: new Date().getTime(),
+            name: 'John',
+            surname: 'Doe',
+            updated: false
+        };
+
+        // insert it
+        await col.insertOne(dbitem);
+
+        // find it again
+        const found = await col.findOne({ id: dbitem.id });
+
+        // and delete it
+        await col.deleteOne({ id: found.id });
+
+        // close the connection
+        await db.close();
         res.json({ success: true });
     } catch (e) {
         console.error(e);
@@ -65,7 +75,7 @@ router.postAsync('/mongo', async (req, res) => {
 router.postAsync('/redis', async (req, res) => {
     try {
         let redisClient = integration.createRedisClient();
-        
+
         const crypto = require("crypto");
         let key = crypto.randomBytes(8).toString("hex");
         let value = crypto.randomBytes(8).toString("hex");

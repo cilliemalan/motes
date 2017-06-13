@@ -2,7 +2,8 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const api = require('./api');
-const zk = require('./zookeeperProvider');
+const zk = require('./integration/zookeeper');
+const secrets = require('./integration/secrets');
 
 // some vars
 const port = process.env.PORT || 3000;
@@ -21,7 +22,7 @@ async function main() {
     console.log(`running in ${process.cwd()}`);
 
     // initialize secrets
-    await require('./secrets').initializeAsync();
+    await secrets.initializeAsync();
 
     // the express app
     const app = express();

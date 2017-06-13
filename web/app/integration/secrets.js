@@ -6,9 +6,12 @@ let allSecrets = {};
 const agentOptions = { ca: fs.readFileSync('/var/run/secrets/kubernetes.io/serviceaccount/ca.crt') };
 
 /**
- * Loads secrets from the local k8s cluster.
+ * Loads secrets from the local k8s cluster if they have not yet been loaded
+ * @param {boolean?} force if true will force reload secrets.
  */
-async function initializeAsync() {
+async function initializeAsync(force) {
+    if (Object.keys(allSecrets).length && !force) return;
+
     console.log('loading secrets...');
 
     const data = await request({

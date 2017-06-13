@@ -24,7 +24,7 @@ else
 fi
 
 # prepare dev pod
-./build-scripts/utilities/prepare-$SCRIPTENV-dev-pod.sh
+./build-scripts/utilities/prepare-$SCRIPTENV-dev-pod.sh --quick
 
 # run tests
 kubectl exec $SCRIPTENV-dev -ti -- npm run test-all

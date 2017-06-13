@@ -6,6 +6,7 @@
   "scripts": {
     "test": "mocha -c",
     "test-integration": "mocha -c test/integration",
+    "test-all": "mocha -c test/integration",
     "test-e2e": "ghostjs e2e/*.js",
     "start": "node ."
   },

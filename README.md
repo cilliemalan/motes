@@ -363,6 +363,11 @@ port 31858. To debug using Chrome, do this:
 **This is an example of how to run and debug a nodejs application inside a Kubernetes
 environment.**
 
+#### Visual Studio Code
+There also is included a launch config for attaching VSCode to the running k8s cluster
+running the local dev pod. You may need to change the IP Address to match your local
+minikube VM.
+
 # Deploying the project to GCP
 
 First things first, you'll need a gocd server. This repos is fused with

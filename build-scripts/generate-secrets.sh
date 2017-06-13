@@ -34,9 +34,9 @@ savepasswords() {
     # Mongo
     kubectl create secret generic mongo \
         "--from-literal=rootuser=admin" \
-        "--from-literal=rootpassword=@mongo1" \
+        "--from-literal=rootpassword=$mongo1" \
         "--from-literal=user=mongo" \
-        "--from-literal=password=@mongo2" \
+        "--from-literal=password=$mongo2" \
 
     # Grafana
     kubectl create secret generic grafana \

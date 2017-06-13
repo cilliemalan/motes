@@ -1,0 +1,29 @@
+{
+    "version": "0.1.0",
+    "tasks": [
+        {
+            "taskName": "prepareDebugging",
+            "isShellCommand": false,
+            "showOutput": "always",
+            "echoCommand": false,
+            "command": "bash",
+            "args": [
+                "-l",
+                "--",
+                "build-scripts/utilities/prepare-local-dev-pod.sh"
+            ]
+        },
+        {
+            "taskName": "tests",
+            "isShellCommand": false,
+            "showOutput": "always",
+            "echoCommand": false,
+            "command": "bash",
+            "args": [
+                "-l",
+                "--",
+                "build-scripts/run-unit-tests.sh"
+            ]
+        }
+    ]
+}

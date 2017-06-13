@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const api = require('./api');
 const zk = require('./integration/zookeeper');
 const secrets = require('./integration/secrets');
+const logger = require('winston');
 
 // some vars
 const port = process.env.PORT || 3000;
@@ -14,12 +15,12 @@ const wwwroot = path.resolve("./public");
  */
 async function main() {
 
-    console.log('starting...');
+    logger.info('starting...');
 
     // change cwd to the application root
     process.chdir(path.join(__dirname, '..'));
 
-    console.log(`running in ${process.cwd()}`);
+    logger.verbose(`running in ${process.cwd()}`);
 
     // initialize secrets
     await secrets.initializeAsync();
@@ -28,7 +29,7 @@ async function main() {
     const app = express();
 
     // static files
-    console.log(`static files in ${wwwroot}`);
+    logger.verbose(`static files in ${wwwroot}`);
     app.use(express.static(wwwroot));
 
     // some parsers
@@ -39,7 +40,7 @@ async function main() {
     app.use('/api', api);
 
     // start!
-    console.log(`start listen on port ${port}`);
+    logger.verbose(`start listen on port ${port}`);
 
     // listen (promisified)
     await new Promise((resolve, reject) => {
@@ -52,10 +53,10 @@ async function main() {
     });
 
 
-    console.log(`Listening on port ${port}`);
+    logger.info(`Listening on port ${port}`);
     let zkpath = await zk.registerAsync(process.env.HOSTNAME);
-    console.log(`registered with zk under ${zkpath} as ${process.env.HOSTNAME}`);
-    console.log(`There are currently ${await zk.getNumberOfActiveServersAsync()} registered servers`);
+    logger.verbose(`registered with zk under ${zkpath} as ${process.env.HOSTNAME}`);
+    logger.verbose(`There are currently ${await zk.getNumberOfActiveServersAsync()} registered servers`);
 }
 
 //start!

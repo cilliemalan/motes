@@ -1,5 +1,7 @@
 const request = require('request-promise');
+const logger = require('winston');
 const fs = require('fs');
+
 const token = fs.readFileSync('/var/run/secrets/kubernetes.io/serviceaccount/token').toString();
 const auth = { Authorization: `Bearer ${token}` };
 let allSecrets = {};
@@ -12,7 +14,7 @@ const agentOptions = { ca: fs.readFileSync('/var/run/secrets/kubernetes.io/servi
 async function initializeAsync(force) {
     if (Object.keys(allSecrets).length && !force) return;
 
-    console.log('loading secrets...');
+    logger.silly('loading secrets...');
 
     const data = await request({
         uri: 'https://kubernetes/api/v1/namespaces/default/secrets',
@@ -35,7 +37,7 @@ async function initializeAsync(force) {
             });
     }
 
-    console.log(`loaded secrets for: ${Object.keys(allSecrets).join(", ")}`);
+    logger.verbose(`loaded secrets for: ${Object.keys(allSecrets).join(", ")}`);
 }
 
 /**

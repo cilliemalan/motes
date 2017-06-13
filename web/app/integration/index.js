@@ -1,13 +1,14 @@
 const bluebird = require('bluebird');
-
-const secrets = require('./secrets');
-
 const redis = require("redis");
-bluebird.promisifyAll(redis.RedisClient.prototype);
-
-const MongoClient = require('mongodb').MongoClient;
-
 const Influx = require('influx');
+const mongodb = require('mongodb');
+const secrets = require('./secrets');
+const logger = require('winston');
+
+bluebird.promisifyAll(redis.RedisClient.prototype);
+const MongoClient = mongodb.MongoClient;
+
+
 
 /**
  * Creates a redis client connected to the local k8s redis
@@ -44,7 +45,7 @@ async function createInfluxDbConnection(database = 'influx') {
         username: username,
         password: password
     });
-    
+
     return conn;
 }
 

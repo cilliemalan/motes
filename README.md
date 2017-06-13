@@ -251,13 +251,17 @@ In order to sync the files a mount needs to be created on the minikube VM (note:
 that does happen automatically, but the VM itself - the k8s host). In order to create the
 mount, do the following:
 1. Open VirtualBox manager. You will notice the minikube VM is running there.
+
    ![](http://i.imgur.com/hkjQ18j.png)
 2. Select it and click **Settings** on the toolbar above
+
    ![](http://i.imgur.com/jywBKrh.png)
 3. Next, go to **Shared Folders** on the left.
+
    ![](http://i.imgur.com/t2OUArv.png)
 4. As you can see, there is an item in the list called "motes". You won't have this item
    and will need to create it. In order to create it, click the **+** button to the right.
+
    ![](http://i.imgur.com/4T8WPdQ.png)
 5. A small dialog will pop up. In the first field enter the local path (on your computer)
    to the folder where you cloned this repo. As you may have guessed for me that is
@@ -270,9 +274,94 @@ mount, do the following:
 6. To make sure that this worked, open a shell and type `minikube ssh`. This will SSH into
    the minikube VM. Once you are in, check that the path `/motes` contains the files. For
    example:
+
    ![](http://i.imgur.com/XVEKwdt.png)
 
-No you're ready to move on to the next step
+No you're ready to move on to the next step!
+
+#### Creating the local dev pod
+The local dev pod builds an image based on *web* and creates a pod based on it directly
+(e.g. no deployment or controller). It also creates two services, one for web and one
+for debugging. The web service is a nodeport service listening on port 31000 and the
+debugger on port 31858. To create the pod simply run:
+```
+$ ./build-scripts/utilities/prepare-local-dev-pod.sh
+```
+
+The script will exit once the pod is created. Check that everything is fine:
+```
+$ kubectl get pods -l app=local-dev
+NAME        READY     STATUS    RESTARTS   AGE
+local-dev   1/1       Running   0          13h
+```
+
+You can check the pod's logs by running
+```
+$ kubectl logs local-dev
+```
+
+You can also tail the log by running
+```
+$ kubectl logs local-dev -f
+```
+
+While you are developing, any problems will show up in the logs, so it's helpful to have
+them tail in a window somewhere.
+
+#### Check the application
+To check the running application in your browser, run
+```
+$ minikube service local-dev
+```
+This will open a browser at the URL of running application. 
+
+**Note:** If it opens up and says "Connection Refused" it likely means the
+application crashed. Check the logs for why this may have happened. To restart
+the application simply touch a js file (e.g. `touch web/index.js`) and nodemon
+will restart the application.
+
+If you just want the url of the application, simply run
+```
+$ minikube service local-dev --url
+http://192.168.99.100:31000
+```
+
+#### Debug the application
+The debugger is always listening in inspect mode, on the same ip address on
+port 31858. To debug using Chrome, do this:
+1. Open Chrome and browse to `chrome://inspect`
+
+   ![](http://i.imgur.com/3CHuipf.png)
+
+2. Click *Configure...* and enter the IP Address as above, but use the port 31858
+
+   ![](http://i.imgur.com/1Dl5TuZ.png)
+
+3. Click *Inspect* to start debugging:
+
+   ![](http://i.imgur.com/rKpftbU.png)
+
+   As you can see, it already shows the application logs in the console window.
+
+4. As an exercise, let's create a breakpoint. Open up the file `api.js` by going to
+   _Sources_ and navigating to `file:///` -> `usr/src/app` -> `app` -> `api.js`
+
+   ![](http://i.imgur.com/Bsn757Q.png)
+
+5. Add a breakpoint inside the `zookeeper` route handler:
+
+   ![](http://i.imgur.com/Ri520rm.png)
+
+6. Next, open the browser to the app and click on the zookeeper test:
+
+   ![](http://i.imgur.com/UUlXRyM.png)
+
+7. The breakpoint is hit!
+
+   ![](http://i.imgur.com/EyLtXcY.png)
+
+**This is an example of how to run and debug a nodejs application inside a Kubernetes
+environment.**
 
 # Deploying the project to GCP
 

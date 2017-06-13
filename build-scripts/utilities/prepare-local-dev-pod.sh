@@ -171,6 +171,11 @@ if [[ $RUNNING == 0 ]]; then
 fi
 
 
+
 else
   echo "Dev pod running"
 fi
+
+
+# run npm install
+kubectl exec local-dev -ti -- test ! -f "package-lock.json" && npm install

@@ -23,6 +23,9 @@ fi
 
 if [[ -z "$(docker images 2>/dev/null | grep local/local-dev)" || "$QUICK" != "yes" ]]; then
 
+# unset quick if set
+unset QUICK
+
 # build a container just for us! It's based on the web image
 TAG=$(imagetag web)
 docker build -t "local/local-dev" --cache-from "local/local-dev" - <<EOF

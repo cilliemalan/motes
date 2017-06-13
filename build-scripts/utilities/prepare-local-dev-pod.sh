@@ -11,9 +11,17 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$DIR"
 source "build-scripts/utilities/project-env.sh"
 
-
 red() { >&2 echo -e "\033[0;31m$@\033[0m"; }
 green() { echo -e "\033[0;32m$@\033[0m"; }
+
+
+if [[ "$1" == "--quick" ]]; then
+QUICK="yes"
+fi
+
+
+
+if [[ -z "$(docker images 2>/dev/null | grep local/local-dev)" || "$QUICK" != "yes" ]]; then
 
 # build a container just for us! It's based on the web image
 TAG=$(imagetag web)
@@ -39,37 +47,40 @@ synloop & nodemon --inspect=0.0.0.0:5858 -nolazy index.js"]
 
 EOF
 
-
-
-
-
-
 if [[ $? != 0 ]]; then
     echo "Failed to build dev image"
     exit 4
 fi
 
-# Make sure minikube has the needed mount
-# NOTE: THIS IS NOT WORKING DUE TO BUG IN MINIKUBE
-# minikube mount "$DIR:/motes"
-echo "Checking if minikube mount exists..."
-MOUNT_EXISTS=$(minikube ssh -- "if [[ -e /motes ]]; then echo exists; fi")
-if [[ $MOUNT_EXISTS != "exists" ]]; then
-    red "The mount /motes inside the minikube vm does not exist"
-    red "Due to a bug in minikube we can't do this for you"
-    echo"You need to mount the folder within minikube called /motes to $(pwd)"
-    echo "This is typically done with the command:"
-    echo
-    echo "  minikube mount '$DIR:/motes'"
-    echo
-    echo "But this will probably not work. As a workaround use your VM driver"
-    echo "(guessing virtualbox) and create the mount manually."
-    exit 4
-else
-    echo "mount exists!"
 fi
 
 
+if [[ "$QUICK" != "yes" ]]; then
+
+  # Make sure minikube has the needed mount
+  # NOTE: THIS IS NOT WORKING DUE TO BUG IN MINIKUBE
+  # minikube mount "$DIR:/motes"
+  echo "Checking if minikube mount exists..."
+  MOUNT_EXISTS=$(minikube ssh -- "if [[ -e /motes ]]; then echo exists; fi")
+  if [[ $MOUNT_EXISTS != "exists" ]]; then
+      red "The mount /motes inside the minikube vm does not exist"
+      red "Due to a bug in minikube we can't do this for you"
+      echo"You need to mount the folder within minikube called /motes to $(pwd)"
+      echo "This is typically done with the command:"
+      echo
+      echo "  minikube mount '$DIR:/motes'"
+      echo
+      echo "But this will probably not work. As a workaround use your VM driver"
+      echo "(guessing virtualbox) and create the mount manually."
+      exit 4
+  else
+      echo "mount exists!"
+  fi
+
+fi
+
+
+if [[ -z "$(kubectl get service -l app=local-dev | grep local-dev)" || "$QUICK" != "yes" ]]; then
 
 echo "configuring debug services..."
 kubectl apply -f - <<EOF
@@ -104,7 +115,9 @@ spec:
     app: local-dev
 EOF
 
+fi
 
+if [[ -z "$(kubectl get pod -l app=local-dev | grep local-dev)" || "$QUICK" != "yes" ]]; then
 
 echo "Creating dev pod..."
 cat <<EOF | kubectl apply -f -
@@ -141,8 +154,6 @@ spec:
         path: /motes/web
 EOF
 
-
-
 RUNNING=0
 for i in 1 2 3 4 5 6 7 8 9 10; 
 do
@@ -159,11 +170,7 @@ if [[ $RUNNING == 0 ]]; then
     exit 3;
 fi
 
-# kill any existing running nodejs instances
-# kubectl exec local-dev -t -- bash -c 'for pid in $(ps -ef | grep -E ":[0-9][0-9] node" | awk "{print \$2}"); do kill -9 $pid; done'
 
-
-
-# run npm install on pod
-# echo "Running npm install"
-# kubectl exec local-dev -t -- npm install --no-optional
+else
+  echo "Dev pod running"
+fi

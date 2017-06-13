@@ -6,6 +6,7 @@
             "isShellCommand": false,
             "showOutput": "always",
             "echoCommand": false,
+            "isTestCommand": true,
             "command": "bash",
             "args": [
                 "-l",

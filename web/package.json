@@ -33,7 +33,7 @@
     "influx": "^5.0.7",
     "kubernetes-client": "^3.11.0",
     "lodash": "^4.17.4",
-    "mocha": "^3.3.0",
+    "mocha": "^3.4.2",
     "mongodb": "^2.2.26",
     "node-zookeeper-client-async": "^1.0.0-beta",
     "on-finished": "~2.3.0",

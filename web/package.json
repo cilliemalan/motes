@@ -11,7 +11,9 @@
       "html"
     ],
     "all": true,
-    "include": ["app/**/*.js"]
+    "include": [
+      "app/**/*.js"
+    ]
   },
   "scripts": {
     "test": "mocha -c",
@@ -36,6 +38,7 @@
   },
   "homepage": "https://github.com/cilliemalan/continuous-delivery-example#readme",
   "dependencies": {
+    "amqplib": "^0.5.1",
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.1",
     "express": "^4.15.2",

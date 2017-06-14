@@ -388,6 +388,10 @@ After this you should see that all tests pass. If some fail there is likely some
 wrong with the ecosystem, so check which tests failed and check that those services
 were created successfully.
 
+#### Code Coverage
+You can now check out code coverage in the `coverage` folder.
+
+
 # Deploying the project to GCP
 
 First things first, you'll need a gocd server. This repos is fused with

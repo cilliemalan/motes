@@ -1,31 +1,46 @@
-const ghost = require('ghostjs').default;
 const assert = require('chai').assert;
+const webdriver = require('selenium-webdriver');
+const By = webdriver.By;
 
 //this will start the server
-const url = require('../index').url;
+process.env.PORT = process.env.ALT_PORT || 4000;
+require('../../app');
 
-describe('The site', () => {
+describe('End to End tests', function () {
+    this.timeout(60000);
+    let driver;
 
-    beforeEach(async () => {
-
-        // open the page
-        await ghost.open(url);
-
+    before(async function () {
+        driver = await new webdriver.Builder()
+            .usingServer('http://selenium-hub:4444/wd/hub')
+            .withCapabilities(webdriver.Capabilities.chrome())
+            .build();
     });
 
-    it('loads', async () => {
+    after(async function () {
+        await driver.quit();
+    });
 
-        // check the title
-        let pageTitle = await ghost.pageTitle();
-        assert.equal(pageTitle, 'Continuous Delivery Example');
+    describe('The site', function () {
 
-        // check that there is a header
-        let h1 = await ghost.findElement("h1");
-        assert.isOk(h1);
+        beforeEach(function () {
+            // load the page
+            driver.get(`http://local-dev-alt:${process.env.PORT}`);
+        });
 
-        // check the header text
-        let headerText = await h1.text();
-        assert.isOk(headerText);
-        assert.equal(headerText, "Continuous Delivery Example");
+        it('loads', async function () {
+
+            // check the page title
+            const pageTitle = await driver.getTitle();
+            assert.equal(pageTitle, 'Continuous Delivery Example');
+
+            // check that there is a header
+            let h1 = await driver.findElement(By.css('h1'));
+
+            // check the header text
+            let headerText = await h1.getText();
+            assert.equal(headerText, "Continuous Delivery Example");
+        });
+
     });
 });

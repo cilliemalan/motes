@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: selenium-hub
+  labels:
+    app: selenium
+    set: testing
+spec:
+  ports:
+  - port: 4444
+    name: selenium
+  clusterIP: None
+  selector:
+    app: selenium
+    role: hub
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: selenium-hub
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: selenium
+        set: testing
+        role: hub
+    spec:
+      containers:
+      - name: selenium-hub
+        imagePullPolicy: IfNotPresent
+        image: selenium/hub
+        ports:
+        - containerPort: 4444
+          name: selenium
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: selenium-chrome
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: selenium
+        set: testing
+        role: node
+    spec:
+      containers:
+      - name: selenium-chrome
+        imagePullPolicy: IfNotPresent
+        image: selenium/node-chrome
+        volumeMounts:
+          - mountPath: /dev/shm
+            name: host-shm
+        ports:
+        - containerPort: 4444
+          name: selenium
+        env:
+        - name: HUB_PORT_4444_TCP_ADDR
+          value: selenium-hub
+        - name: HUB_PORT_4444_TCP_PORT
+          value: "4444"
+          #/dev/shm
+      volumes:
+        - name: host-shm
+          hostPath:
+            # directory location on host
+            path: /dev/shm

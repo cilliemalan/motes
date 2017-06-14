@@ -116,6 +116,20 @@ spec:
   type: NodePort
   selector:
     app: local-dev
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: local-dev-alt
+  labels:
+    app: local-dev-alt
+spec:
+  ports:
+    - name: althttp
+      port: 4000
+  clusterIP: None
+  selector:
+    app: local-dev
 EOF
 
 fi
@@ -143,6 +157,8 @@ spec:
         containerPort: 5858
       - name: http
         containerPort: 3000
+      - name: althttp
+        containerPort: 4000
     env:
       - name: NODE_ENV
         value: development

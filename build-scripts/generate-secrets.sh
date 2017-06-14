@@ -26,6 +26,9 @@ savepasswords() {
     local grafana=$(generatepassword)
     local influxdb1=$(generatepassword)
     local influxdb2=$(generatepassword)
+    local rabbitmq1=$(generatepassword)
+    local rabbitmq2=$(generatepassword)
+    local rabbitmq3=$(generatepassword)
 
     # Redis
     kubectl create secret generic redis \
@@ -52,6 +55,14 @@ savepasswords() {
         "--from-literal=adminpassword=$influxdb1" \
         "--from-literal=username=influx" \
         "--from-literal=password=$influxdb2"
+
+    # RabbitMQ
+    kubectl create secret generic rabbitmq \
+        "--from-literal=username=rabbit" \
+        "--from-literal=password=$rabbitmq1" \
+        "--from-literal=adminusername=admin" \
+        "--from-literal=adminpassword=$rabbitmq2" \
+        "--from-literal=cookie=$rabbitmq3"
 }
 
 # generate passwords and store in k8s

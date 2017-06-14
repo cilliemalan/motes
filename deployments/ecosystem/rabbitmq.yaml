@@ -1,0 +1,87 @@
+# influxdb:alpine
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  labels:
+    app: rabbitmq
+    set: ecosystem
+spec:
+  ports:
+    - name: epmd
+      port: 4369
+    - name: mq
+      port: 5672
+    - name: cluster
+      port: 35197
+    - name: admin
+      port: 15672
+  clusterIP: None
+  selector:
+    app: rabbitmq
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: rabbitmq
+spec:
+  serviceName: rabbitmq
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+        set: ecosystem
+      annotations:
+        pod.alpha.kubernetes.io/initialized: "true"
+    spec:
+      containers:
+        - name: rabbitmq
+          imagePullPolicy: IfNotPresent
+          image: rabbitmq:alpine
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+          env:
+            - name: RABBITMQ_VM_MEMORY_HIGH_WATERMARK
+              value: "0.9"
+            - name: RABBITMQ_ERLANG_COOKIE
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq
+                  key: cookie
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq
+                  key: username
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq
+                  key: password
+          ports:
+            - name: epmd
+              containerPort: 4369
+            - name: mq
+              containerPort: 5672
+            - name: cluster
+              containerPort: 35197
+            - name: admin
+              containerPort: 15672
+          volumeMounts:
+            - name: rabbitmq-data
+              mountPath: /var/lib/rabbitmq
+  volumeClaimTemplates:
+    - metadata:
+        name: rabbitmq-data
+        annotations:
+          volume.alpha.kubernetes.io/storage-class: anything
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: $DATADISKSIZE

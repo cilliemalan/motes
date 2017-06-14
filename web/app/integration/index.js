@@ -4,6 +4,7 @@ const Influx = require('influx');
 const mongodb = require('mongodb');
 const secrets = require('./secrets');
 const logger = require('winston');
+const ampqlib = require('amqplib');
 
 bluebird.promisifyAll(redis.RedisClient.prototype);
 const MongoClient = mongodb.MongoClient;
@@ -58,8 +59,17 @@ async function createInfluxDbConnection(database = 'influx') {
     return conn;
 }
 
+async function createRabbitmqConnectionAsync() {
+    await secrets.initializeAsync();
+    const username = secrets.get("rabbitmq", "username");
+    const password = secrets.get("rabbitmq", "password");
+    const connection = await ampqlib.connect(`amqp://${encodeURIComponent(username)}:${encodeURIComponent(password)}@rabbitmq`);
+    return connection;
+}
+
 module.exports = {
     createRedisClient,
     mongoConnectAsync,
-    createInfluxDbConnection
+    createInfluxDbConnection,
+    createRabbitmqConnectionAsync
 };

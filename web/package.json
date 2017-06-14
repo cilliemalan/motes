@@ -4,7 +4,7 @@
   "description": "Dust motes - web server",
   "main": "index.js",
   "nyc": {
-    "check-coverage": true,
+    "check-coverage": false,
     "cache": true,
     "reporter": [
       "lcov",

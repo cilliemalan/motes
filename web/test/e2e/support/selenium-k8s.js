@@ -237,7 +237,7 @@ async function startSeleniumAsync() {
     if (!ready) throw `Waited ${waitMinutes} minutes and selenium never became ready`;
 
     while (new Date() < cutoff) {
-        available = probe('selenium-dev', 4444);
+        available = await probe('dev-selenium', 4444);
         if (available) {
             logger.info('selenium server accepting connections');
             break;
@@ -248,6 +248,8 @@ async function startSeleniumAsync() {
     }
 
     if (!available) throw `Waited ${waitMinutes} minutes and selenium never accepted connections`;
+
+    return `http://dev-selenium:4444/wd/hub`;
 }
 
 /**

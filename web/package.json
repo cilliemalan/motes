@@ -64,7 +64,8 @@
     "eslint-plugin-node": "^4.2.2",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
-    "nyc": "^11.0.2"
+    "nyc": "^11.0.2",
+    "tcp-ping": "^0.1.1"
   },
   "optionalDependencies": {}
 }

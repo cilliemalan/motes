@@ -1,38 +1,41 @@
 const assert = require('chai').assert;
 const webdriver = require('selenium-webdriver');
+const Application = require('../../app').Application;
 const By = webdriver.By;
 const until = webdriver.until;
-
-//this will start the server
-process.env.PORT = process.env.ALT_PORT || 4000;
-require('../../app');
-
-//get our ip address
-const os = require('os');
-const ifaces = os.networkInterfaces();
-const url = `http://${ifaces['eth0'][0].address}:${process.env.PORT}`;
-
+const seleniumUtil = require('./support/selenium-k8s');
 
 describe('End to End tests', function () {
     this.timeout(60000);
     let driver;
+    let app;
 
     before(async function () {
+        // create a server and start listening
+        app = new Application({ port: 4000 });
+        await app.start();
+
+        // spin up a selenium deployment
+        const seleniumUrl = await seleniumUtil.startSeleniumAsync();
+
+        // connect to selenium
         driver = await new webdriver.Builder()
-            .usingServer('http://selenium-hub:4444/wd/hub')
+            .usingServer(seleniumUrl)
             .withCapabilities(webdriver.Capabilities.chrome())
             .build();
     });
 
     after(async function () {
         await driver.quit();
+        await app.stop();
+        await seleniumUtil.stopSeleniumAsync();
     });
 
     describe('The site', function () {
 
         beforeEach(function () {
             // load the page
-            driver.get(url);
+            driver.get(app.publicUrl);
         });
 
         it('loads', async function () {

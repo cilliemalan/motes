@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/cilliemalan/motes.png)](https://travis-ci.org/cilliemalan/motes)
 
 # Motes
-It's like, a thing.
+A collection of ideas for continuous integration and delivery using Kubernetes.
 
 # Getting started
 **Important:** This process will create a significant amount of GCP resources, it
